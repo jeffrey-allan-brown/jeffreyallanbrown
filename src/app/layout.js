@@ -1,5 +1,5 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Header from "@/components/general/Header";
+import Footer from "@/components/general/Footer";
 import "./globals.css";
 
 export const metadata = {
@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`antialiased mx-auto mt-8 lg:mx-auto aligns-center bg-neutral-100`}>
+      <body className={`antialiased mx-auto mt-8 lg:mx-auto aligns-center bg-neutral-100 font-lato`}>
         <Header />
         <main className="container mx-auto flex-auto min-w-0 mt-6 flex flex-col px-2 sm:px-12 bg-neutral-100">
             {children}
