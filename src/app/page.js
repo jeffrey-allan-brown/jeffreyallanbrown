@@ -12,9 +12,9 @@ export default function Home() {
       <p className="font-light text-3xl">Development | Reading | Music | Etc.</p>
     </section>
     <section>
-      <div className="my-8">
-        <h1 className="text-2xl">Albums</h1>
-        <p>Music that I've been listening to lately.</p>
+      <div className="my-10">
+        <h1 className="font-playfair text-4xl">Albums</h1>
+        <p className="text-xl font-light">Music that I've been listening to lately.</p>
       </div>
       <Album/>
     </section>
