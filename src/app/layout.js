@@ -10,10 +10,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`antialiased mx-auto mt-8 lg:mx-auto aligns-center bg-neutral-100 font-lato`}>
+      <link rel="icon" href="/images/logo-32.png" sizes="any" />
+      <body className={`antialiased mx-auto lg:mx-auto aligns-center bg-neutral-100 font-lato`}>
         <Header />
-        <main className="container mx-auto flex-auto min-w-0 mt-6 flex flex-col px-2 sm:px-12 bg-neutral-100">
-            {children}
+          <main className="container mx-auto flex-auto min-w-0 flex flex-col px-2 sm:px-12 bg-neutral-100">
+          {children}
           <Footer />
         </main>
       </body>

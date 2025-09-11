@@ -10,16 +10,15 @@ export default function Album(props) {
 					</div>
 					<div style={{ backgroundImage: `url(${props.cover})` }} className={`shadow-xl/40 transition duration-700 ease-in-out group-hover:-translate-x-12 m-auto inset-0 w-56 z-1 h-56 bg-contain bg-center bg-origin-border bg-neutral-400 rounded-md`}></div>
 				</div>
-				<div className="p-1 space-y-2">
+				<div className="">
 					<div>
-						<h3 className="text-2xl text-neutral-900">{props.title}</h3>
+						<h3 className="text-2xl text-neutral-900 truncate">{props.title}</h3>
 						<p className="text-lg text-neutral-500">{props.artist}</p>
 					</div>
-					
 					<div className="flex justify-between items-center">
 						<div className="flex items-center gap-1">
-							<div className="text-yellow-400">★★★★</div>
-							<div className="text-gray-300">★</div>
+							<div className="text-neutral-400">★★★★★</div>
+							{/* <div className="text-gray-300">★</div> */}
 						</div>
 					</div>
 				</div>
