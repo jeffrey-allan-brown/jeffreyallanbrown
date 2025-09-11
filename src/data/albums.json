@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Spiderland",
+    "artist": "Slint",
+    "cover": "https://upload.wikimedia.org/wikipedia/en/thumb/3/39/Slint_-_Spiderland.jpg/250px-Slint_-_Spiderland.jpg",
+    "color": "#ffffff"
+  },
+  {
+    "title": "Laughing Stock",
+    "artist": "Talk Talk",
+    "cover": "https://m.media-amazon.com/images/I/71tOFUGVgOL._UF1000,1000_QL80_.jpg",
+    "color": "#4d29b1ff"
+  },
+  {
+    "title": "Millions Now Living Will Never Die",
+    "artist": "Tortoise",
+    "cover": "https://f4.bcbits.com/img/a4201817460_10.jpg",
+    "color": "#34b4eb"
+  }
+]
