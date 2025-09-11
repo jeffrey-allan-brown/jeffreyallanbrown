@@ -1,15 +1,19 @@
-export default function Album() {
+'client only'
+export default function Album(props) {
+
 	return (
 		<>
-			<div className="max-w-84 w-full bg-neutral-200 rounded-md overflow-hidden items-center">
+			<div className="max-w-84 w-full rounded-md overflow-hidden items-center">
 				<div className="flex relative group bg-neutral-50 aspect-square items-center">
-					<div className="album transition duration-700 ease-in-out group-hover:translate-x-16 absolute m-auto inset-0 z-0 w-50 h-50 animate-spin rounded-full bg-black "><div className="album_inside"></div></div>
-					<div className="cover transition duration-700 ease-in-out group-hover:-translate-x-12 m-auto inset-0 w-56 z-1 h-56 bg-[url(https://upload.wikimedia.org/wikipedia/en/thumb/3/39/Slint_-_Spiderland.jpg/250px-Slint_-_Spiderland.jpg)] bg-contain bg-center bg-origin-border bg-neutral-400 rounded-md"></div>
+					<div style={{ "--border-color": props.color }} className="after:[border:var(--border-color)] album transition duration-700 ease-in-out group-hover:translate-x-16 absolute m-auto inset-0 z-0 w-50 h-50 animate-spin rounded-full bg-black">
+						<div className="album_inside"></div>
+					</div>
+					<div style={{ backgroundImage: `url(${props.cover})` }} className={`shadow-xl/40 transition duration-700 ease-in-out group-hover:-translate-x-12 m-auto inset-0 w-56 z-1 h-56 bg-contain bg-center bg-origin-border bg-neutral-400 rounded-md`}></div>
 				</div>
 				<div className="p-1 space-y-2">
 					<div>
-						<h3 className="text-2xl font-lato text-gray-900">Album Name</h3>
-						<p className="text-gray-500 mt-1">Artist Name</p>
+						<h3 className="text-2xl text-neutral-900">{props.title}</h3>
+						<p className="text-lg text-neutral-500">{props.artist}</p>
 					</div>
 					
 					<div className="flex justify-between items-center">
