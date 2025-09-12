@@ -1,10 +1,15 @@
 import React from "react";
 import Album from "@/components/music/Album";
-import albums from "@/data/albums.json";
+// import albums from "@/data/albums.json";
 import Book from "@/components/books/Book";
-import books from "@/data/books.json";
+// import books from "@/data/books.json";
 
-export default function Home() {
+import { getBooks } from "@/sanity/lib/documents/books";
+import { getMusic } from "@/sanity/lib/documents/music";
+
+export default async function Home() {
+  const books = await getBooks();
+  const albums = await getMusic();
   return (
     <>
     <section className="mb-24">
@@ -19,7 +24,7 @@ export default function Home() {
         <p className="text-xl font-light">Music that I&apos;ve been listening to lately.</p>
       </div>
       {/* albums */}
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
       {albums.map(album => (
         <Album key={album.title} title={album.title} artist={album.artist} cover={album.cover} color={album.color}/>
       ))}
