@@ -58,10 +58,18 @@
     font-style: normal;
 }
 
-:root {
-  --disk-size: 12.5rem;
-  --book-height: 300px;
-  --book-width: 200px;
+@layer base {
+  :root {
+    --disk-size: 10rem;
+    --book-height: 300px;
+    --book-width: 200px;
+  }
+}
+
+@media (min-width: 1024px) { /* lg: */
+  :root {
+    --disk-size: 8rem;
+  }
 }
 
 @theme {
@@ -78,7 +86,7 @@
   position: absolute;
   width: calc(var(--disk-size));
   height: calc(var(--disk-size));
-  border-width: 5px;
+  border-width: 2px;
   border-style: solid;
   border-color: rgba(255, 255, 255, 0.4);
   border-image: initial;
@@ -101,9 +109,8 @@
   width: calc(var(--disk-size) / 3);
   height: calc(var(--disk-size) / 3);
   position: absolute;
-  border-width: 30px;
+  border-width: 20px;
   border-style: solid;
-  /* border-color: rgb(234, 170, 87); */
   border-image: initial;
   border-radius: 50%;
   top: 50%;
@@ -113,8 +120,6 @@
 
 /* book styling */
 .book {
-  /* width: 225px;
-  height: 350px; */
   width: calc(var(--book-width));
   height: calc(var(--book-height));
   position:relative;
@@ -138,22 +143,9 @@
   -webkit-transition: all .5s ease-in-out;
 }
 
-.cover1 {
-  background: url('http://fuel-design.com/media/uploads/publications/Soviet_Space_Dogs_cover.jpg');
-}
-
-.cover2 {
-  background: url('http://fuel-design.com/media/uploads/publications/Tattoo_Vol_I_cover.jpg');
-}
-
-.cover3 {
-  background: url('http://fuel-design.com/media/uploads/publications/CRIME_cover.jpg');
-}
-
 .book .book-cover {
   background-size: 100% 100%;
 }
-
 
 .effect {
   width: 20px;
@@ -192,8 +184,6 @@
 
 .book:hover .effect {
   width: 40px;
- /** margin-left:13px;
-  opacity: 0.5; **/
 }
 
 .book:hover .light {
@@ -220,7 +210,6 @@
   inset -8px 0 0 white,
   inset -9px 0 0 #dbdbdb;
 }
-
 
 .book:hover .btn, .book:hover .title {
   opacity: 1;
