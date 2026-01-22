@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Welcome to Astro with TailwindCSS">
+  <main class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div class="container mx-auto px-4 py-16">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-5xl font-bold text-gray-900 mb-6 text-center">
+          Welcome to <span class="text-indigo-600">Astro</span> + <span class="text-blue-600">TailwindCSS</span>
+        </h1>
+
+        <p class="text-xl text-gray-700 text-center mb-12">
+          Start building amazing websites with the power of Astro and the utility-first CSS framework.
+        </p>
+
+        <div class="grid md:grid-cols-3 gap-6 mb-12">
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="text-3xl mb-4">🚀</div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Fast by Default</h2>
+            <p class="text-gray-600">Astro delivers lightning-fast performance with zero JS by default.</p>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="text-3xl mb-4">🎨</div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Beautiful Styles</h2>
+            <p class="text-gray-600">TailwindCSS provides utility classes for rapid UI development.</p>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="text-3xl mb-4">⚡</div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Developer Joy</h2>
+            <p class="text-gray-600">Build faster with TypeScript, hot module reloading, and more.</p>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <a
+            href="https://docs.astro.build"
+            class="inline-block bg-indigo-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Read the Docs
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
