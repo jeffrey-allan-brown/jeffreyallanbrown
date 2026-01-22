@@ -1,0 +1,21 @@
+---
+const { cover, title, artist, color } = Astro.props;
+---
+<div class="w-full max-w-xs sm:max-w-sm md:max-w-md xl:w-64 mx-auto rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
+	<div class="flex relative group bg-neutral-50 aspect-square items-center">
+		<div style={{ "--border-color": color }} class="after:[border:var(--border-color)] album transition duration-700 ease-in-out group-hover:translate-x-12 absolute m-auto inset-0 z-0 xl:w-32 xl:h-32 sm:w-34 sm:h-34 animate-spin rounded-full bg-black">
+			<div class="album_inside"></div>
+		</div>
+		<div style={{ backgroundImage: `url(${cover})` }} class={`shadow-xl/40 transition duration-700 ease-in-out group-hover:-translate-x-10 m-auto inset-0 z-1 w-40 h-40 bg-contain bg-center bg-origin-border bg-neutral-400 rounded-md`}></div>
+	</div>
+	<div class="p-4 sm:p-5 text-center sm:text-left">
+    <h3 class="text-lg sm:text-xl font-light text-neutral-800 truncate">{title}</h3>
+    <p class="text-sm sm:text-base mb-2">{artist}</p>
+
+    <div class="flex justify-center sm:justify-between items-center mt-2">
+      <div class="flex items-center gap-1 text-neutral-400">
+        <!-- <div>★★★★★</div> -->
+      </div>
+    </div>
+  </div>
+</div>

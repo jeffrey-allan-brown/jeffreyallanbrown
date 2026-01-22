@@ -1,0 +1,43 @@
+---
+import PrimaryLayout from "../layouts/primary_layout.astro";
+import Navigation from "../components/shared/navigation.astro";
+import PageHeader from "../components/shared/page_header.astro";
+import FeaturedArticle from "../components/blog/featuredArticle.astro";
+
+import { getFeaturedPosts } from "../sanity/lib/documents/posts";
+let posts = await getFeaturedPosts();
+
+---
+<PrimaryLayout page_title="thoughts">
+  <div class="overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-2 bottom-0 rounded-4xl ring-1 ring-black/5 ring-inset bg-linear-115 from-[#ffffff] from-28% via-[#F5F5F5] via-70% to-[#EBEBEB] sm:bg-linear-145"></div>
+      <div class="relative px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:max-w-7xl">
+          <Navigation />
+        </div>
+      </div>
+    </div>
+    <main>
+      <div class="py-16">
+        <div class="px-6 lg:px-8">
+          <div class="mx-auto max-w-2xl lg:max-w-7xl">
+            <PageHeader heading="thoughts" subheading="words i've written" content="long-form content where i explore ideas and concepts in more detail"/>
+          </div>
+        </div>
+      </div>
+      <div class="mx-auto max-w-2xl lg:max-w-7xl">
+        {posts.length === 0 ? (<div>Posts Coming Soon</div>) : (
+          <div class="flex flex-wrap gap-2 pb-10">
+          {posts.map(post => (
+            <FeaturedArticle key={post._id} title={post.title} author={post.author} thumbnail={post.thumbnail} slug={post.slug} summary={post.summary} date={post.date}/>
+          ))}
+        </div>
+        )
+
+        }
+        
+      </div>
+    </main>
+  </div>
+</PrimaryLayout>

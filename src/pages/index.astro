@@ -1,50 +1,297 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import PrimaryLayout from "../layouts/primary_layout.astro";
+import Navigation from "../components/shared/navigation.astro";
+import FeaturedArticle from "../components/blog/featuredArticle.astro";
+import { getRecentPosts } from "../sanity/lib/documents/posts";
+
+type Post = {
+  _id: string;
+  title: string;
+  author: {
+    name: string;
+    image: string;
+  };
+  summary: string;
+  date: string;
+  thumbnail: string;
+  slug: string;
+};
+
+const recentPosts: Post[] = await getRecentPosts(3);
 ---
-
-<Layout title="Welcome to Astro with TailwindCSS">
-  <main class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-    <div class="container mx-auto px-4 py-16">
-      <div class="max-w-4xl mx-auto">
-        <h1 class="text-5xl font-bold text-gray-900 mb-6 text-center">
-          Welcome to <span class="text-indigo-600">Astro</span> + <span class="text-blue-600">TailwindCSS</span>
-        </h1>
-
-        <p class="text-xl text-gray-700 text-center mb-12">
-          Start building amazing websites with the power of Astro and the utility-first CSS framework.
-        </p>
-
-        <div class="grid md:grid-cols-3 gap-6 mb-12">
-          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
-            <div class="text-3xl mb-4">🚀</div>
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Fast by Default</h2>
-            <p class="text-gray-600">Astro delivers lightning-fast performance with zero JS by default.</p>
+<PrimaryLayout page_title="homepage">
+  <div class="overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-2 bottom-0 rounded-4xl ring-1 ring-black/5 ring-inset bg-linear-115 from-[#ffffff] from-28% via-[#F5F5F5] via-70% to-[#EBEBEB] sm:bg-linear-145"></div>
+      <div class="relative px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:max-w-7xl">
+          <Navigation />
+          <div class="pt-16 pb-24 sm:pt-24 sm:pb-32 md:pt-32 md:pb-48">
+            <h1 class="font-flagfies text-6xl/[0.9] text-gray-950 sm:text-8xl/[0.8] md:text-9xl/[0.8]">Hello, I'm Jeffrey.</h1>
+            <p class="font-light mt-8 max-w-xl text-xl/7 text-gray-950/75 sm:text-3xl/8">I'm a perpetual hobbyist and obsessive tinkerer specializing in problem solving and creative solutioning.</p>
+            <!-- <div class="mt-12 flex flex-col gap-x-6 gap-y-4 sm:flex-row">
+              <a class="inline-flex items-center justify-center px-4 py-[calc(--spacing(2)-1px)] rounded-full border border-transparent bg-gray-950 shadow-md text-base font-medium whitespace-nowrap text-white data-disabled:bg-gray-950 data-disabled:opacity-40 data-hover:bg-gray-800" data-headlessui-state="" href="#">cta one</a>
+              <a class="relative inline-flex items-center justify-center px-4 py-[calc(--spacing(2)-1px)] rounded-full border border-transparent bg-white/15 shadow-md ring-1 ring-[#000000]/15 after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_2px_1px_#ffffff4d] text-base font-medium whitespace-nowrap text-gray-950 data-disabled:bg-white/15 data-disabled:opacity-40 data-hover:bg-white/20" data-headlessui-state="" href="/">cta two</a>
+            </div> -->
           </div>
-
-          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
-            <div class="text-3xl mb-4">🎨</div>
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Beautiful Styles</h2>
-            <p class="text-gray-600">TailwindCSS provides utility classes for rapid UI development.</p>
-          </div>
-
-          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
-            <div class="text-3xl mb-4">⚡</div>
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Developer Joy</h2>
-            <p class="text-gray-600">Build faster with TypeScript, hot module reloading, and more.</p>
-          </div>
-        </div>
-
-        <div class="text-center">
-          <a
-            href="https://docs.astro.build"
-            class="inline-block bg-indigo-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read the Docs
-          </a>
         </div>
       </div>
     </div>
-  </main>
-</Layout>
+    <main>
+      <div class="py-16 sm:py-24">
+        <div class="px-6 lg:px-8">
+          <div class="mx-auto max-w-2xl lg:max-w-7xl">
+            <div class="mb-10">
+              <h2 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase">Recent Writing</h2>
+              <h3 class="mt-2 text-4xl font-medium tracking-tighter text-gray-950 sm:text-5xl">Latest Thoughts</h3>
+            </div>
+            {recentPosts.length === 0 ? (
+              <div class="text-gray-500">Posts coming soon</div>
+            ) : (
+              <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                {recentPosts.map(post => (
+                  <FeaturedArticle
+                    key={post._id}
+                    title={post.title}
+                    author={post.author}
+                    thumbnail={post.thumbnail}
+                    slug={post.slug}
+                    summary={post.summary}
+                    date={post.date}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <!-- <div class="bg-linear-to-b from-white from-50% to-gray-100 py-32">
+        <div class="px-6 lg:px-8">
+          <div class="mx-auto max-w-2xl lg:max-w-7xl">
+            <h2 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">subheading</h2>
+            <h3 class="mt-2 max-w-3xl text-4xl font-medium tracking-tighter text-pretty text-gray-950 data-dark:text-white sm:text-6xl">main section heading</h3>
+            <div class="mt-10 grid grid-cols-1 gap-4 sm:mt-16 lg:grid-cols-6 lg:grid-rows-2">
+              <div class="max-lg:rounded-t-4xl lg:col-span-3 lg:rounded-tl-4xl group relative flex flex-col overflow-hidden rounded-lg bg-white shadow-xs ring-1 ring-black/5 data-dark:bg-gray-800 data-dark:ring-white/15">
+                <div class="relative h-80 shrink-0">
+                  <div class="h-80 bg-[url(/screenshots/profile.png)] bg-size-[1000px_560px] bg-position-[left_-109px_top_-112px] bg-no-repeat"></div>
+                  <div class="absolute inset-0 bg-linear-to-t from-white to-50% group-data-dark:from-gray-800 group-data-dark:from-[-25%]"></div>
+                </div>
+                <div class="relative p-10">
+                  <h3 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">box one</h3>
+                  <p class="mt-1 text-2xl/8 font-medium tracking-tight text-gray-950 group-data-dark:text-white">title for box one</p>
+                  <p class="mt-2 max-w-[600px] text-sm/6 text-gray-600 group-data-dark:text-gray-400">Radiant uses social engineering to build a detailed financial picture of your leads. Know their budget, compensation package, social security number, and more.</p>
+                </div>
+              </div>
+              <div class="lg:col-span-3 lg:rounded-tr-4xl group relative flex flex-col overflow-hidden rounded-lg bg-white shadow-xs ring-1 ring-black/5 data-dark:bg-gray-800 data-dark:ring-white/15">
+                <div class="relative h-80 shrink-0">
+                  <div class="absolute inset-0 bg-[url(/screenshots/competitors.png)] bg-size-[1100px_650px] bg-position-[left_-38px_top_-73px] bg-no-repeat"></div>
+                  <div class="absolute inset-0 bg-linear-to-t from-white to-50% group-data-dark:from-gray-800 group-data-dark:from-[-25%]"></div>
+                </div>
+                <div class="relative p-10">
+                  <h3 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">box two</h3>
+                  <p class="mt-1 text-2xl/8 font-medium tracking-tight text-gray-950 group-data-dark:text-white">title for box two</p>
+                  <p class="mt-2 max-w-[600px] text-sm/6 text-gray-600 group-data-dark:text-gray-400">With our advanced data mining, you'll know which companies your leads are talking to and exactly how much they're being charged.</p>
+                </div>
+              </div>
+              <div class="lg:col-span-2 lg:rounded-bl-4xl group relative flex flex-col overflow-hidden rounded-lg bg-white shadow-xs ring-1 ring-black/5 data-dark:bg-gray-800 data-dark:ring-white/15">
+                <div class="relative h-80 shrink-0">
+                  
+                </div>
+                <div class="relative p-10">
+                  <h3 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">box three</h3>
+                  <p class="mt-1 text-2xl/8 font-medium tracking-tight text-gray-950 group-data-dark:text-white">title for box three</p>
+                  <p class="mt-2 max-w-[600px] text-sm/6 text-gray-600 group-data-dark:text-gray-400">It's never been faster to cold email your entire contact list using our streamlined keyboard shortcuts.</p>
+                </div>
+              </div>
+              <div class="lg:col-span-2 group relative flex flex-col overflow-hidden rounded-lg bg-white shadow-xs ring-1 ring-black/5 data-dark:bg-gray-800 data-dark:ring-white/15">
+                <div class="relative h-80 shrink-0">
+                  
+                </div>
+                <div class="relative p-10">
+                  <h3 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">box four</h3>
+                  <p class="mt-1 text-2xl/8 font-medium tracking-tight text-gray-950 group-data-dark:text-white">title for box four</p>
+                  <p class="mt-2 max-w-[600px] text-sm/6 text-gray-600 group-data-dark:text-gray-400">Bypass those inconvenient privacy laws to source leads from the most unexpected places.</p>
+                </div>
+              </div>
+              <div class="max-lg:rounded-b-4xl lg:col-span-2 lg:rounded-br-4xl group relative flex flex-col overflow-hidden rounded-lg bg-white shadow-xs ring-1 ring-black/5 data-dark:bg-gray-800 data-dark:ring-white/15">
+                <div class="relative h-80 shrink-0">
+                  
+                </div>
+                <div class="relative p-10">
+                  <h3 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">box five</h3>
+                  <p class="mt-1 text-2xl/8 font-medium tracking-tight text-gray-950 group-data-dark:text-white">title for box five</p>
+                  <p class="mt-2 max-w-[600px] text-sm/6 text-gray-600 group-data-dark:text-gray-400">Radiant helps you sell in locations currently under international embargo.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mx-2 mt-2 rounded-4xl bg-gray-900 py-32">
+        <div class="px-6 lg:px-8">
+          <div class="mx-auto max-w-2xl lg:max-w-7xl">
+            <h2 data-dark="true" class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">subheading</h2>
+            <h3 data-dark="true" class="mt-2 max-w-3xl text-4xl font-medium tracking-tighter text-pretty text-gray-950 data-dark:text-white sm:text-6xl">main section heading</h3>
+            <div class="mt-10 grid grid-cols-1 gap-4 sm:mt-16 lg:grid-cols-6 lg:grid-rows-2">
+              <div data-dark="true" class="max-lg:rounded-t-4xl lg:col-span-4 lg:rounded-tl-4xl group relative flex flex-col overflow-hidden rounded-lg bg-white shadow-xs ring-1 ring-black/5 data-dark:bg-gray-800 data-dark:ring-white/15">
+                <div class="relative h-80 shrink-0">
+                  <div class="h-80 bg-[url(/screenshots/networking.png)] bg-size-[851px_344px] bg-no-repeat"></div>
+                  <div class="absolute inset-0 bg-linear-to-b from-white to-50% group-data-dark:from-gray-800 group-data-dark:from-[-25%]"></div>
+                </div>
+                <div class="relative p-10">
+                  <h3 data-dark="true" class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">box one</h3>
+                  <p class="mt-1 text-2xl/8 font-medium tracking-tight text-gray-950 group-data-dark:text-white">title for box one</p>
+                  <p class="mt-2 max-w-[600px] text-sm/6 text-gray-600 group-data-dark:text-gray-400">Our RadiantAI chat assistants analyze the sentiment of your conversations in real time, ensuring you're always one step ahead.</p>
+                </div>
+              </div>
+              <div data-dark="true" class="z-10 overflow-visible! lg:col-span-2 lg:rounded-tr-4xl group relative flex flex-col overflow-hidden rounded-lg bg-white shadow-xs ring-1 ring-black/5 data-dark:bg-gray-800 data-dark:ring-white/15">
+                <div class="relative h-80 shrink-0">
+                  
+                </div>
+                <div class="relative p-10">
+                  <h3 data-dark="true" class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">box two</h3>
+                  <p class="mt-1 text-2xl/8 font-medium tracking-tight text-gray-950 group-data-dark:text-white">title for box two</p>
+                  <p class="mt-2 max-w-[600px] text-sm/6 text-gray-600 group-data-dark:text-gray-400">With thousands of integrations, no one will be able to escape your cold outreach.</p>
+                </div>
+              </div>
+              <div data-dark="true" class="lg:col-span-2 lg:rounded-bl-4xl group relative flex flex-col overflow-hidden rounded-lg bg-white shadow-xs ring-1 ring-black/5 data-dark:bg-gray-800 data-dark:ring-white/15">
+                <div class="relative h-80 shrink-0">
+                  
+                </div>
+                <div class="relative p-10">
+                  <h3 data-dark="true" class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">box three</h3>
+                  <p class="mt-1 text-2xl/8 font-medium tracking-tight text-gray-950 group-data-dark:text-white">title for box three</p>
+                  <p class="mt-2 max-w-[600px] text-sm/6 text-gray-600 group-data-dark:text-gray-400">Automatically insert intro calls into your leads' calendars without their consent.</p>
+                </div>
+              </div>
+              <div data-dark="true" class="max-lg:rounded-b-4xl lg:col-span-4 lg:rounded-br-4xl group relative flex flex-col overflow-hidden rounded-lg bg-white shadow-xs ring-1 ring-black/5 data-dark:bg-gray-800 data-dark:ring-white/15">
+                <div class="relative h-80 shrink-0">
+                  <div class="h-80 bg-[url(/screenshots/engagement.png)] bg-size-[851px_344px] bg-no-repeat"></div>
+                  <div class="absolute inset-0 bg-linear-to-b from-white to-50% group-data-dark:from-gray-800 group-data-dark:from-[-25%]"></div>
+                </div>
+                <div class="relative p-10">
+                  <h3 data-dark="true" class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">box four</h3>
+                  <p class="mt-1 text-2xl/8 font-medium tracking-tight text-gray-950 group-data-dark:text-white">title for box four</p>
+                  <p class="mt-2 max-w-[600px] text-sm/6 text-gray-600 group-data-dark:text-gray-400">RadiantAI automatically writes LinkedIn posts that relate current events to B2B sales, helping you build a reputation as a thought leader.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </main>
+    <footer>
+      <div class="relative bg-linear-115 from-[#F6F6F8] from-28% via-[#D5D5D5] via-70% to-[#C4C4C4] sm:bg-linear-145">
+        <div class="absolute inset-2 rounded-4xl bg-white/80"></div>
+        <div class="px-6 lg:px-8">
+          <div class="mx-auto max-w-2xl lg:max-w-7xl">
+            <!-- <div class="relative pt-20 pb-16 text-center sm:py-24">
+              <hgroup>
+                <h2 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">footer header</h2>
+                <p class="mt-6 text-3xl font-medium tracking-tight text-gray-950 sm:text-5xl">footer title<br>secondary bottom title</p>
+              </hgroup>
+              <p class="mx-auto mt-6 max-w-xs text-sm/6 text-gray-500">footer description paragraph for additional information and context</p>
+              <div class="mt-6">
+                <a class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-[calc(--spacing(2)-1px)] rounded-full border border-transparent bg-gray-950 shadow-md text-base font-medium whitespace-nowrap text-white data-disabled:bg-gray-950 data-disabled:opacity-40 data-hover:bg-gray-800" data-headlessui-state="" href="#">footer cta</a>
+              </div>
+            </div> -->
+            <div class="pb-16">
+              <div class="group/row relative isolate pt-[calc(--spacing(2)+1px)] last:pb-[calc(--spacing(2)+1px)]">
+                <div aria-hidden="true" class="absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2">
+                  <div class="absolute inset-x-0 top-0 border-t border-black/5"></div>
+                  <div class="absolute inset-x-0 top-2 border-t border-black/5"></div>
+                  <div class="absolute inset-x-0 bottom-0 hidden border-b border-black/5 group-last/row:block"></div>
+                  <div class="absolute inset-x-0 bottom-2 hidden border-b border-black/5 group-last/row:block"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-y-10 pb-6 lg:grid-cols-6 lg:gap-8">
+                  <div class="col-span-2 flex">
+                    <div class="pt-6 lg:pb-6 group/item relative">
+                      <svg viewBox="0 0 15 15" aria-hidden="true" class="hidden group-first/item:block absolute size-[15px] fill-black/10 -top-2 -left-2">
+                        <path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path>
+                      </svg>
+                      <svg viewBox="0 0 15 15" aria-hidden="true" class="absolute size-[15px] fill-black/10 -top-2 -right-2">
+                        <path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path>
+                      </svg>
+                      <svg viewBox="0 0 15 15" aria-hidden="true" class="hidden group-first/item:group-last/row:block absolute size-[15px] fill-black/10 -bottom-2 -left-2"><path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path></svg>
+                      <svg viewBox="0 0 15 15" aria-hidden="true" class="hidden group-last/row:block absolute size-[15px] fill-black/10 -bottom-2 -right-2">
+                        <path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path>
+                      </svg>
+                      jeffrey.
+                    </div>
+                  </div>
+                  <!-- <div class="col-span-2 grid grid-cols-2 gap-x-8 gap-y-12 lg:col-span-4 lg:grid-cols-subgrid lg:pt-6">
+                    <div>
+                      <h3 class="text-sm/6 font-medium text-gray-950/50">heading one</h3>
+                      <ul class="mt-6 space-y-4 text-sm/6">
+                    <li>
+                      <a class="font-medium text-gray-950 data-hover:text-gray-950/75" data-headlessui-state="" href="/pricing">item one</a>
+                    </li>
+                    <li>
+                      <a class="font-medium text-gray-950 data-hover:text-gray-950/75" data-headlessui-state="" href="#">item two</a>
+                    </li>
+                    <li>
+                      <a class="font-medium text-gray-950 data-hover:text-gray-950/75" data-headlessui-state="" href="#">item three</a>
+                    </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h3 class="text-sm/6 font-medium text-gray-950/50">heading two</h3>
+                    </div>
+                    <div>
+                      <h3 class="text-sm/6 font-medium text-gray-950/50">heading three</h3>
+                    </div>
+                    <div>
+                      <h3 class="text-sm/6 font-medium text-gray-950/50">heading four</h3>
+                    </div>
+                  </div> -->
+                </div>
+              </div>
+              <div class="flex justify-between group/row relative isolate pt-[calc(--spacing(2)+1px)] last:pb-[calc(--spacing(2)+1px)]">
+                <div aria-hidden="true" class="absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2">
+                  <div class="absolute inset-x-0 top-0 border-t border-black/5"></div>
+                  <div class="absolute inset-x-0 top-2 border-t border-black/5"></div>
+                  <div class="absolute inset-x-0 bottom-0 hidden border-b border-black/5 group-last/row:block"></div>
+                  <div class="absolute inset-x-0 bottom-2 hidden border-b border-black/5 group-last/row:block"></div>
+                </div>
+                <div>
+                  <div class="py-3 group/item relative">
+                    <svg viewBox="0 0 15 15" aria-hidden="true" class="hidden group-first/item:block absolute size-[15px] fill-black/10 -top-2 -left-2">
+                      <path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path>
+                    </svg>
+                    <svg viewBox="0 0 15 15" aria-hidden="true" class="absolute size-[15px] fill-black/10 -top-2 -right-2">
+                      <path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path>
+                    </svg>
+                    <svg viewBox="0 0 15 15" aria-hidden="true" class="hidden group-first/item:group-last/row:block absolute size-[15px] fill-black/10 -bottom-2 -left-2"><path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path></svg><svg viewBox="0 0 15 15" aria-hidden="true" class="hidden group-last/row:block absolute size-[15px] fill-black/10 -bottom-2 -right-2">
+                      <path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path></svg>
+                      <div class="text-sm/6 text-gray-950">&copy; 2025 jeffreyallanbrown</div>
+                  </div>
+                </div>
+                <div class="flex">
+                  <div class="flex items-center gap-8 py-3 group/item relative">
+                    <svg viewBox="0 0 15 15" aria-hidden="true" class="hidden group-first/item:block absolute size-[15px] fill-black/10 -top-2 -left-2">
+                      <path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path>
+                    </svg>
+                    <svg viewBox="0 0 15 15" aria-hidden="true" class="absolute size-[15px] fill-black/10 -top-2 -right-2">
+                      <path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path>
+                    </svg>
+                    <svg viewBox="0 0 15 15" aria-hidden="true" class="hidden group-first/item:group-last/row:block absolute size-[15px] fill-black/10 -bottom-2 -left-2">
+                      <path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path>
+                    </svg>
+                    <svg viewBox="0 0 15 15" aria-hidden="true" class="hidden group-last/row:block absolute size-[15px] fill-black/10 -bottom-2 -right-2">
+                      <path d="M8 0H7V7H0V8H7V15H8V8H15V7H8V0Z"></path>
+                    </svg>
+                    <a target="_blank" aria-label="jeffrey brown's linkedin profile" class="text-gray-950 data-hover:text-gray-950/75" data-headlessui-state="" href="https://www.linkedin.com/in/jeffreyallanbrown/">
+                      <svg viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                      <path d="M14.82 0H1.18A1.169 1.169 0 000 1.154v13.694A1.168 1.168 0 001.18 16h13.64A1.17 1.17 0 0016 14.845V1.15A1.171 1.171 0 0014.82 0zM4.744 13.64H2.369V5.996h2.375v7.644zm-1.18-8.684a1.377 1.377 0 11.52-.106 1.377 1.377 0 01-.527.103l.007.003zm10.075 8.683h-2.375V9.921c0-.885-.015-2.025-1.234-2.025-1.218 0-1.425.966-1.425 1.968v3.775H6.233V5.997H8.51v1.05h.032c.317-.601 1.09-1.235 2.246-1.235 2.405-.005 2.851 1.578 2.851 3.63v4.197z"></path></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</PrimaryLayout>
+		

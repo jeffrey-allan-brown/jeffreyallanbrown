@@ -1,0 +1,65 @@
+---
+// critical functions //
+import { client } from "../../sanity/lib/client";
+import { renderPortableText } from "../../sanity/lib/portableText";
+import { getPostBySlug } from "../../sanity/lib/documents/posts";
+
+// page components //
+import PrimaryLayout from "../../layouts/primary_layout.astro";
+import Navigation from "../../components/shared/navigation.astro";
+
+export async function getStaticPaths() {
+  const posts = await client.fetch(`*[_type == "post" && defined(slug.current)]{
+    "slug": slug.current
+  }`);
+
+  // Always return an array, even if empty
+  let value = (posts || []).map(post => ({
+    params: { slug: post.slug },
+  }));
+  console.log(value)
+  return value
+}
+
+const { slug } = Astro.params;
+
+const post = await getPostBySlug(slug)
+const content = renderPortableText(post.content);
+---
+<PrimaryLayout page_title="blog post">
+  <div class="overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-2 bottom-0 rounded-4xl ring-1 ring-black/5 ring-inset bg-linear-115 from-[#ffffff] from-28% via-[#F5F5F5] via-70% to-[#EBEBEB] sm:bg-linear-145"></div>
+      <div class="relative px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:max-w-7xl">
+          <Navigation />
+        </div>
+      </div>
+    </div>
+    <main class="overflow-hidden">
+      <div class="relative mx-auto max-w-7xl">
+        <div class="absolute -top-44 -right-60 h-60 w-xl transform-gpu md:right-0 bg-linear-115 from-[#ffffff] from-28% via-[#f5f5f5] via-70% to-[#f5f5f5] rotate-[-10deg] rounded-full blur-3xl"></div></div><div class="px-6 lg:px-8">
+          <div class="mx-auto max-w-2xl lg:max-w-7xl">
+            <h2 class="mt-16 font-mono text-xs/5 font-semibold tracking-widest text-gray-900 uppercase data-dark:text-gray-900">{post.date}</h2>
+            <h1 class="text-6xl/[0.9] text-black sm:text-8xl/[0.8] md:text-7xl/[0.8]">{post.title}</h1>
+            <div class="mt-16 grid grid-cols-1 gap-8 pb-24 lg:grid-cols-[15rem_1fr] xl:grid-cols-[15rem_1fr_15rem]">
+              <div class="flex flex-wrap items-center gap-8 max-lg:justify-between lg:flex-col lg:items-start"><div class="flex items-center gap-3">
+                <img alt="" class="aspect-square size-6 rounded-full object-cover" src={post.author.image}>
+                <div class="text-sm/5 text-gray-900">{post.author.name}</div></div><div class="flex flex-wrap gap-2">
+                  <a class="rounded-full border border-dotted border-gray-300 bg-gray-50 px-2 text-sm/6 font-medium text-gray-500" data-headlessui-state="" href="/blog?category=insights">Tag One</a><a class="rounded-full border border-dotted border-gray-300 bg-gray-50 px-2 text-sm/6 font-medium text-gray-500" data-headlessui-state="" href="/blog?category=knowledge">Tag Two</a>
+                </div>
+              </div>
+              <div class="text-gray-700">
+                <div class="max-w-2xl xl:mx-auto">
+                  <img alt={post.banner.alt} class="mb-10 aspect-3/2 w-full rounded-2xl object-cover shadow-xl" src={post.banner.url}>
+                  <div class="prose" set:html={content}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</PrimaryLayout>

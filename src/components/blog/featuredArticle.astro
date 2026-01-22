@@ -1,0 +1,18 @@
+---
+const { title, slug, date, summary, author, thumbnail } = Astro.props;
+---
+<div class="relative flex flex-col max-w-100  rounded-3xl bg-white p-2 shadow-md ring-1 shadow-black/5 ring-black/5">
+  <img alt="A crossed out European emblem" class="w-full rounded-2xl object-cover" src={thumbnail}>
+  <div class="flex flex-1 flex-col p-8">
+    <div class="text-sm/5 text-gray-700">{date}</div>
+    <div class="mt-2 text-base/7 font-medium">
+      <a data-headlessui-state="" href={`/blog/${slug}`}>
+        <span class="absolute inset-0"></span>{title}</a>
+        </div>
+        <div class="mt-2 flex-1 text-sm/6 text-gray-500">{summary}</div>
+      <div class="mt-6 flex items-center gap-3">
+        <img alt="" class="aspect-square size-6 rounded-full object-cover" src={author.image}>
+        <div class="text-sm/5 text-gray-700">{author.name}</div>
+      </div>
+  </div>
+</div>

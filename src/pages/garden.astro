@@ -1,0 +1,26 @@
+---
+import PrimaryLayout from "../layouts/primary_layout.astro";
+import Navigation from "../components/shared/navigation.astro";
+import PageHeader from "../components/shared/page_header.astro";
+---
+<PrimaryLayout page_title="garden">
+  <div class="overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-2 bottom-0 rounded-4xl ring-1 ring-black/5 ring-inset bg-linear-115 from-[#ffffff] from-28% via-[#F5F5F5] via-70% to-[#EBEBEB] sm:bg-linear-145"></div>
+      <div class="relative px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:max-w-7xl">
+          <Navigation />
+        </div>
+      </div>
+    </div>
+    <main>
+      <div class="py-32">
+        <div class="px-6 lg:px-8">
+          <div class="mx-auto max-w-2xl lg:max-w-7xl">
+            <PageHeader heading="garden" subheading="notes, artifacts, and other musings" content="unrefined artificats and snippets of varying levels of maturity"/>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</PrimaryLayout>
