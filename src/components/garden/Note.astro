@@ -1,0 +1,134 @@
+---
+const { title, date, excerpt, slug, tags = [], maturity } = Astro.props;
+
+// Maturity badges
+const maturityConfig = {
+  seedling: { emoji: "🌱", color: "bg-green-50 border-green-200" },
+  budding: { emoji: "🌿", color: "bg-emerald-50 border-emerald-200" },
+  evergreen: { emoji: "🌲", color: "bg-teal-50 border-teal-200" }
+};
+const maturityData = maturityConfig[maturity as keyof typeof maturityConfig];
+---
+
+<article class="note-container relative group">
+  <a href={`/garden/${slug}`} class="block">
+    <!-- Dot matrix paper effect -->
+    <div class="note-paper relative overflow-hidden">
+      <!-- Perforated edge (left side) -->
+      <div class="absolute left-0 top-0 bottom-0 w-8 flex flex-col justify-around items-center bg-[#f0f0f0] border-r border-dashed border-[#d0d0d0]">
+        {[...Array(12)].map(() => (
+          <div class="w-2 h-2 rounded-full bg-[#e0e0e0] border border-[#d0d0d0]"></div>
+        ))}
+      </div>
+
+      <!-- Main content area -->
+      <div class="pl-12 pr-6 py-6">
+        <!-- Date and maturity (top right) -->
+        <div class="absolute top-4 right-4 flex items-center gap-2">
+          {maturityData && (
+            <span class={`text-lg ${maturityData.color} px-2 py-1 rounded border`}>
+              {maturityData.emoji}
+            </span>
+          )}
+          {date && (
+            <span class="text-xs font-mono text-[#666] opacity-60">
+              {date}
+            </span>
+          )}
+        </div>
+
+        <!-- Title -->
+        <h3 class="text-xl font-mono font-bold text-[#1a1a1a] mb-3 tracking-tight leading-tight pr-28">
+          {title}
+        </h3>
+
+        <!-- Excerpt -->
+        {excerpt && (
+          <p class="text-sm font-mono text-[#333] leading-relaxed mb-4 line-clamp-3">
+            {excerpt}
+          </p>
+        )}
+
+        <!-- Tags -->
+        {tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-4">
+            {tags.map((tag: string) => (
+              <span class="text-xs font-mono px-2 py-0.5 bg-[#e0e0e0] text-[#555] border border-[#d0d0d0] rounded">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <!-- Read more indicator -->
+        <div class="mt-4 text-xs font-mono text-[#666] flex items-center gap-1">
+          <span>→ READ MORE</span>
+        </div>
+      </div>
+
+      <!-- Horizontal printer bands (subtle) -->
+      <div class="absolute inset-0 pointer-events-none opacity-[0.03]">
+        {[...Array(20)].map((_, i) => (
+          <div
+            class="absolute left-0 right-0 h-px bg-[#666]"
+            style={{ top: `${(i + 1) * 5}%` }}
+          ></div>
+        ))}
+      </div>
+
+      <!-- Dot matrix texture overlay -->
+      <div class="dot-matrix-overlay absolute inset-0 pointer-events-none"></div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .note-container {
+    transition: transform 0.2s ease;
+  }
+
+  .note-container:hover {
+    transform: translateY(-2px);
+  }
+
+  .note-paper {
+    background: linear-gradient(
+      180deg,
+      #f5f5f5 0%,
+      #e8e8e8 50%,
+      #f5f5f5 100%
+    );
+    border: 1px solid #d0d0d0;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.08),
+      0 4px 6px rgba(0, 0, 0, 0.05);
+    min-height: 200px;
+  }
+
+  .note-container:hover .note-paper {
+    box-shadow:
+      0 4px 6px rgba(0, 0, 0, 0.1),
+      0 8px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Dot matrix texture using CSS pattern */
+  .dot-matrix-overlay {
+    background-image: radial-gradient(circle, #00000008 1px, transparent 1px);
+    background-size: 4px 4px;
+    opacity: 0.5;
+  }
+
+  /* Text selection styling to match theme */
+  .note-paper ::selection {
+    background: #d0d0d0;
+    color: #1a1a1a;
+  }
+
+  /* Slight text shadow for dot matrix effect */
+  .note-paper h3,
+  .note-paper p {
+    text-shadow:
+      0.5px 0.5px 0 rgba(0, 0, 0, 0.1),
+      1px 1px 0 rgba(0, 0, 0, 0.05);
+  }
+</style>

@@ -2,6 +2,21 @@
 import PrimaryLayout from "../layouts/primary_layout.astro";
 import Navigation from "../components/shared/navigation.astro";
 import PageHeader from "../components/shared/page_header.astro";
+import Note from "../components/garden/Note.astro";
+
+import { getNotes } from "../sanity/lib/documents/notes";
+const notes = await getNotes();
+
+// Extract all unique tags from notes
+const allTags = [...new Set(notes.flatMap((note: any) => note.tags || []))].sort();
+
+// Extract unique maturity levels
+const maturityLevels = [...new Set(notes.map((note: any) => note.maturity).filter(Boolean))];
+const maturityConfig = {
+  seedling: { emoji: "🌱", label: "Seedling" },
+  budding: { emoji: "🌿", label: "Budding" },
+  evergreen: { emoji: "🌲", label: "Evergreen" }
+};
 ---
 <PrimaryLayout page_title="garden">
   <div class="overflow-hidden">
@@ -14,13 +29,155 @@ import PageHeader from "../components/shared/page_header.astro";
       </div>
     </div>
     <main>
-      <div class="py-32">
+      <div class="py-16">
         <div class="px-6 lg:px-8">
           <div class="mx-auto max-w-2xl lg:max-w-7xl">
-            <PageHeader heading="garden" subheading="notes, artifacts, and other musings" content="unrefined artificats and snippets of varying levels of maturity"/>
+            <div class="mb-12">
+              <PageHeader heading="garden" subheading="notes, artifacts, and other musings" content="unrefined artifacts and snippets of varying levels of maturity"/>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+              <!-- Sidebar -->
+              <aside class="lg:w-64 flex-shrink-0">
+                <div class="sticky top-8">
+                  <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+                    <h3 class="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wide">Filter by Tag</h3>
+
+                    {allTags.length > 0 ? (
+                      <div class="space-y-2">
+                        <button
+                          class="tag-filter-btn w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-100 transition-colors bg-gray-900 text-white"
+                          data-tag="all"
+                        >
+                          All Notes
+                        </button>
+                        {allTags.map((tag: any) => (
+                          <button
+                            class="tag-filter-btn w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-100 transition-colors text-gray-700"
+                            data-tag={tag}
+                          >
+                            #{tag}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p class="text-sm text-gray-500 italic">No tags yet</p>
+                    )}
+                  </div>
+                </div>
+              </aside>
+
+              <!-- Notes Grid -->
+              <div class="flex-1">
+                <!-- Maturity Filter Pills -->
+                {maturityLevels.length > 0 && (
+                  <div class="flex flex-wrap gap-2 mb-6">
+                    <button
+                      class="maturity-filter-pill px-4 py-2 rounded-full text-sm font-medium transition-colors bg-gray-900 text-white"
+                      data-maturity="all"
+                    >
+                      All Maturity
+                    </button>
+                    {maturityLevels.map((level: any) => {
+                      const config = maturityConfig[level as keyof typeof maturityConfig];
+                      return config && (
+                        <button
+                          class="maturity-filter-pill px-4 py-2 rounded-full text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          data-maturity={level}
+                        >
+                          <span class="mr-1">{config.emoji}</span>
+                          {config.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {notes.length > 0 ? (
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="notes-grid">
+                    {notes.map((note: any) => (
+                      <div class="note-card" data-tags={JSON.stringify(note.tags || [])} data-maturity={note.maturity || ''}>
+                        <Note
+                          title={note.title}
+                          date={note.date}
+                          excerpt={note.excerpt}
+                          slug={note.slug}
+                          tags={note.tags || []}
+                          maturity={note.maturity}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div class="text-center py-24">
+                    <p class="text-gray-600 text-lg font-mono">No notes planted yet... 🌱</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </main>
   </div>
 </PrimaryLayout>
+
+<script>
+  const tagFilterButtons = document.querySelectorAll('.tag-filter-btn');
+  const maturityFilterPills = document.querySelectorAll('.maturity-filter-pill');
+  const noteCards = document.querySelectorAll('.note-card');
+
+  let selectedTag = 'all';
+  let selectedMaturity = 'all';
+
+  function filterNotes() {
+    noteCards.forEach(card => {
+      const cardElement = card as HTMLElement;
+      const noteTags = JSON.parse(card.getAttribute('data-tags') || '[]');
+      const noteMaturity = card.getAttribute('data-maturity') || '';
+
+      const tagMatch = selectedTag === 'all' || noteTags.includes(selectedTag);
+      const maturityMatch = selectedMaturity === 'all' || noteMaturity === selectedMaturity;
+
+      if (tagMatch && maturityMatch) {
+        cardElement.style.display = 'block';
+      } else {
+        cardElement.style.display = 'none';
+      }
+    });
+  }
+
+  // Tag filtering
+  tagFilterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      selectedTag = button.getAttribute('data-tag') || 'all';
+
+      // Update active button styling
+      tagFilterButtons.forEach(btn => {
+        btn.classList.remove('bg-gray-900', 'text-white');
+        btn.classList.add('text-gray-700');
+      });
+      button.classList.add('bg-gray-900', 'text-white');
+      button.classList.remove('text-gray-700');
+
+      filterNotes();
+    });
+  });
+
+  // Maturity filtering
+  maturityFilterPills.forEach(button => {
+    button.addEventListener('click', () => {
+      selectedMaturity = button.getAttribute('data-maturity') || 'all';
+
+      // Update active button styling
+      maturityFilterPills.forEach(btn => {
+        btn.classList.remove('bg-gray-900', 'text-white');
+        btn.classList.add('bg-gray-100', 'text-gray-700');
+      });
+      button.classList.add('bg-gray-900', 'text-white');
+      button.classList.remove('bg-gray-100', 'text-gray-700');
+
+      filterNotes();
+    });
+  });
+</script>
