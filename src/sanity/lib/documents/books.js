@@ -3,7 +3,7 @@ import groq from 'groq'
 
 export async function getBooks() {
 	return client.fetch(
-		groq`*[_type == "book" && featured]{
+		groq`*[_type == "book" && featured] | order(_createdAt desc) [0...10] {
 			_id,
 			title,
 			author,

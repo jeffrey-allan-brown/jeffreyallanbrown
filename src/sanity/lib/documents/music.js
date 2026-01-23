@@ -3,7 +3,7 @@ import groq from 'groq'
 
 export async function getAlbums() {
 	return client.fetch(
-		groq`*[_type == "music" && featured ]{
+		groq`*[_type == "music" && featured] | order(_createdAt desc) [0...10] {
 			_id,
 			title,
 			artist,
