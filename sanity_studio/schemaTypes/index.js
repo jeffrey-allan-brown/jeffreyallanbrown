@@ -3,7 +3,8 @@ import {musicType} from "./musicType";
 import {postType} from "./postType";
 import {authorType} from "./authorType";
 import {noteType} from "./noteType";
+import {bookmarkType} from "./bookmarkType";
 
 export const schema = {
-  types: [bookType, musicType, postType, authorType, noteType],
+  types: [bookType, musicType, postType, authorType, noteType, bookmarkType],
 }

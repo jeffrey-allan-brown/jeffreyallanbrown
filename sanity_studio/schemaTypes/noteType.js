@@ -51,8 +51,23 @@ export const noteType = defineType({
 			type: "array",
 			of: [{type: "string"}],
 			options: {
-				layout: "tags"
-			}
+				layout: "tags",
+				list: [
+					{title: "Code", value: "code"},
+					{title: "Design", value: "design"},
+					{title: "Learning", value: "learning"},
+					{title: "Technology", value: "technology"},
+					{title: "Productivity", value: "productivity"},
+					{title: "Writing", value: "writing"},
+					{title: "Tools", value: "tools"},
+					{title: "Philosophy", value: "philosophy"},
+					{title: "Health", value: "health"},
+					{title: "Career", value: "career"},
+					{title: "Projects", value: "projects"},
+					{title: "Ideas", value: "ideas"}
+				]
+			},
+			description: "Select from predefined tags or type to add your own"
 		}),
 		defineField({
 			name: "date",

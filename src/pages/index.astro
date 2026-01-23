@@ -3,6 +3,9 @@ import PrimaryLayout from "../layouts/primary_layout.astro";
 import Navigation from "../components/shared/navigation.astro";
 import FeaturedArticle from "../components/blog/featuredArticle.astro";
 import { getRecentPosts } from "../sanity/lib/documents/posts";
+import { getBooks } from "../sanity/lib/documents/books";
+import { getAlbums } from "../sanity/lib/documents/music";
+import { getNotes } from "../sanity/lib/documents/notes";
 
 type Post = {
   _id: string;
@@ -18,6 +21,18 @@ type Post = {
 };
 
 const recentPosts: Post[] = await getRecentPosts(3);
+const allBooks = await getBooks();
+const recentBooks = allBooks.slice(0, 3);
+const allAlbums = await getAlbums();
+const recentAlbums = allAlbums.slice(0, 3);
+const allNotes = await getNotes();
+const recentNotes = allNotes.slice(0, 3);
+
+const maturityConfig = {
+  seedling: { emoji: "🌱", label: "Seedling" },
+  budding: { emoji: "🌿", label: "Budding" },
+  evergreen: { emoji: "🌲", label: "Evergreen" }
+};
 ---
 <PrimaryLayout page_title="homepage">
   <div class="overflow-hidden">
@@ -65,6 +80,146 @@ const recentPosts: Post[] = await getRecentPosts(3);
           </div>
         </div>
       </div>
+
+      <!-- Recent Books -->
+      <div class="py-16 sm:py-24 bg-gray-50">
+        <div class="px-6 lg:px-8">
+          <div class="mx-auto max-w-2xl lg:max-w-7xl">
+            <div class="mb-10 flex items-end justify-between">
+              <div>
+                <h2 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase">Reading List</h2>
+                <h3 class="mt-2 text-4xl font-medium tracking-tighter text-gray-950 sm:text-5xl">Recently Read Books</h3>
+              </div>
+              <a href="/media" class="text-sm font-medium text-gray-950 hover:text-gray-600 transition-colors">View all →</a>
+            </div>
+            {recentBooks.length === 0 ? (
+              <div class="text-gray-500">No books yet</div>
+            ) : (
+              <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                {recentBooks.map((book: any) => (
+                  <a href={`/books/${book.slug}`} class="group">
+                    <div class="relative overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-black/5 transition-all hover:shadow-md">
+                      {book.currentlyReading && (
+                        <div class="absolute top-2 right-2 z-10 bg-blue-500 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full shadow-lg">
+                          Reading
+                        </div>
+                      )}
+                      <div class="aspect-[2/3] overflow-hidden bg-gray-100">
+                        <img src={book.cover} alt={book.title} class="h-full w-full object-cover group-hover:scale-105 transition-transform" />
+                      </div>
+                      <div class="p-2">
+                        <h4 class="text-sm font-semibold text-gray-950 line-clamp-1">{book.title}</h4>
+                        <p class="mt-0.5 text-xs text-gray-600 line-clamp-1">{book.author}</p>
+                        {book.yearRead && (
+                          <p class="mt-1 text-[10px] text-gray-500">{book.yearRead}</p>
+                        )}
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Music -->
+      <div class="py-16 sm:py-24">
+        <div class="px-6 lg:px-8">
+          <div class="mx-auto max-w-2xl lg:max-w-7xl">
+            <div class="mb-10 flex items-end justify-between">
+              <div>
+                <h2 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase">Music</h2>
+                <h3 class="mt-2 text-4xl font-medium tracking-tighter text-gray-950 sm:text-5xl">Recently Listened</h3>
+              </div>
+              <a href="/media" class="text-sm font-medium text-gray-950 hover:text-gray-600 transition-colors">View all →</a>
+            </div>
+            {recentAlbums.length === 0 ? (
+              <div class="text-gray-500">No albums yet</div>
+            ) : (
+              <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                {recentAlbums.map((album: any) => (
+                  <a href={`/albums/${album.slug}`} class="group">
+                    <div class="relative overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-black/5 transition-all hover:shadow-md">
+                      {album.currentlyListening && (
+                        <div class="absolute top-2 right-2 z-10 bg-green-500 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full shadow-lg">
+                          Listening
+                        </div>
+                      )}
+                      <div class="aspect-square overflow-hidden bg-gray-100">
+                        <img src={album.cover} alt={album.title} class="h-full w-full object-cover group-hover:scale-105 transition-transform" />
+                      </div>
+                      <div class="p-2">
+                        <h4 class="text-sm font-semibold text-gray-950 line-clamp-1">{album.title}</h4>
+                        <p class="mt-0.5 text-xs text-gray-600 line-clamp-1">{album.artist}</p>
+                        {album.yearListened && (
+                          <p class="mt-1 text-[10px] text-gray-500">{album.yearListened}</p>
+                        )}
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Notes -->
+      <div class="py-16 sm:py-24 bg-gray-50">
+        <div class="px-6 lg:px-8">
+          <div class="mx-auto max-w-2xl lg:max-w-7xl">
+            <div class="mb-10 flex items-end justify-between">
+              <div>
+                <h2 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase">Digital Garden</h2>
+                <h3 class="mt-2 text-4xl font-medium tracking-tighter text-gray-950 sm:text-5xl">Recent Notes</h3>
+              </div>
+              <a href="/garden" class="text-sm font-medium text-gray-950 hover:text-gray-600 transition-colors">View all →</a>
+            </div>
+            {recentNotes.length === 0 ? (
+              <div class="text-gray-500">No notes yet</div>
+            ) : (
+              <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {recentNotes.map((note: any) => {
+                  const maturityData = maturityConfig[note.maturity as keyof typeof maturityConfig];
+                  return (
+                    <a href={`/garden/${note.slug}`} class="group">
+                      <div class="relative overflow-hidden rounded-lg bg-gradient-to-b from-[#f5f5f5] via-[#e8e8e8] to-[#f5f5f5] border border-[#d0d0d0] transition-all hover:shadow-md p-6">
+                        {maturityData && (
+                          <div class="absolute top-4 right-4">
+                            <span class={`text-sm bg-green-50 border-green-200 px-2 py-1 rounded border`}>
+                              {maturityData.emoji}
+                            </span>
+                          </div>
+                        )}
+                        <h4 class="text-lg font-mono font-bold text-[#1a1a1a] line-clamp-2 pr-10 mb-3">{note.title}</h4>
+                        {note.excerpt && (
+                          <p class="text-sm font-mono text-[#555] leading-relaxed line-clamp-3 mb-4">{note.excerpt}</p>
+                        )}
+                        {note.tags && note.tags.length > 0 && (
+                          <div class="flex flex-wrap gap-1 mt-4">
+                            {note.tags.slice(0, 2).map((tag: string) => (
+                              <span class="text-xs font-mono px-2 py-0.5 bg-[#e0e0e0] text-[#555] border border-[#d0d0d0] rounded">
+                                #{tag}
+                              </span>
+                            ))}
+                            {note.tags.length > 2 && (
+                              <span class="text-xs font-mono text-[#666]">
+                                +{note.tags.length - 2}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <!-- <div class="bg-linear-to-b from-white from-50% to-gray-100 py-32">
         <div class="px-6 lg:px-8">
           <div class="mx-auto max-w-2xl lg:max-w-7xl">
