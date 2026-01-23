@@ -8,8 +8,23 @@ import Album from "../components/albums/Album.astro";
 import { getBooks } from "../sanity/lib/documents/books";
 const books = await getBooks();
 
+// Extract unique years from books and sort them in descending order
+const years = [...new Set(books.map((book: any) => book.yearRead).filter(Boolean))].sort((a: any, b: any) => b - a);
+const currentYear = new Date().getFullYear();
+
+// Check if current year exists in books data
+const hasCurrentYearBooks = years.includes(currentYear);
+const defaultBookYear = hasCurrentYearBooks ? currentYear : 'all';
+
 import { getAlbums } from "../sanity/lib/documents/music";
 const albums = await getAlbums();
+
+// Extract unique years from albums and sort them in descending order
+const albumYears = [...new Set(albums.map((album: any) => album.yearListened).filter(Boolean))].sort((a: any, b: any) => b - a);
+
+// Check if current year exists in albums data
+const hasCurrentYearAlbums = albumYears.includes(currentYear);
+const defaultAlbumYear = hasCurrentYearAlbums ? currentYear : 'all';
 
 ---
 <PrimaryLayout page_title="media">
@@ -29,11 +44,35 @@ const albums = await getAlbums();
             <div class="mb-5">
               <PageHeader heading="books" subheading="things I've been reading" content="books that I've completed recently."/>
             </div>
+
+            {years.length > 0 && (
+              <div class="mb-6 flex flex-wrap gap-2">
+                <button
+                  class={`year-filter-pill px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${defaultBookYear === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                  data-year="all"
+                >
+                  All Years
+                </button>
+                {years.map((year: any) => (
+                  <button
+                    class={`year-filter-pill px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${year === defaultBookYear ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                    data-year={year}
+                  >
+                    {year}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div class="overflow-x-auto scrollbar-hide">
-              <div class="flex gap-6 pb-4">
+              <div class="flex gap-6 pb-4" id="books-list">
                 {books.map((book: any) => (
-                  <div class="flex-shrink-0 w-64">
-                    <Book key={book._id} title={book.title} author={book.author} cover={book.cover} slug={book.slug}/>
+                  <div
+                    class="flex-shrink-0 w-64 book-item"
+                    data-year={book.yearRead || 'unknown'}
+                    style={defaultBookYear !== 'all' && book.yearRead !== defaultBookYear ? 'display: none;' : ''}
+                  >
+                    <Book key={book._id} title={book.title} author={book.author} cover={book.cover} slug={book.slug} currentlyReading={book.currentlyReading}/>
                   </div>
                 ))}
               </div>
@@ -44,11 +83,35 @@ const albums = await getAlbums();
             <div class="mb-5">
               <PageHeader heading="albums" subheading="things I've been listening to" content="albums that i've listened to lately."/>
             </div>
+
+            {albumYears.length > 0 && (
+              <div class="mb-6 flex flex-wrap gap-2">
+                <button
+                  class={`album-year-filter-pill px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${defaultAlbumYear === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                  data-year="all"
+                >
+                  All Years
+                </button>
+                {albumYears.map((year: any) => (
+                  <button
+                    class={`album-year-filter-pill px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${year === defaultAlbumYear ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                    data-year={year}
+                  >
+                    {year}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div class="overflow-x-auto scrollbar-hide">
               <div class="flex gap-6 pb-4">
                 {albums.map((album: any) => (
-                  <div class="flex-shrink-0 w-64">
-                    <Album key={album._id} title={album.title} artist={album.artist} cover={album.cover} color={album.color} slug={album.slug}/>
+                  <div
+                    class="flex-shrink-0 w-64 album-item"
+                    data-year={album.yearListened || 'unknown'}
+                    style={defaultAlbumYear !== 'all' && album.yearListened !== defaultAlbumYear ? 'display: none;' : ''}
+                  >
+                    <Album key={album._id} title={album.title} artist={album.artist} cover={album.cover} color={album.color} slug={album.slug} currentlyListening={album.currentlyListening}/>
                   </div>
                 ))}
               </div>
@@ -60,3 +123,63 @@ const albums = await getAlbums();
     </main>
   </div>
 </PrimaryLayout>
+
+<script>
+  // Handle year filter pills for books
+  const filterPills = document.querySelectorAll('.year-filter-pill');
+  const bookItems = document.querySelectorAll('.book-item');
+
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const selectedYear = pill.getAttribute('data-year');
+
+      // Update active pill styling
+      filterPills.forEach(p => {
+        p.classList.remove('bg-gray-900', 'text-white');
+        p.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+      });
+      pill.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+      pill.classList.add('bg-gray-900', 'text-white');
+
+      // Filter books
+      bookItems.forEach(book => {
+        const bookYear = book.getAttribute('data-year');
+        const bookElement = book as HTMLElement;
+        if (selectedYear === 'all' || bookYear === selectedYear) {
+          bookElement.style.display = 'block';
+        } else {
+          bookElement.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Handle year filter pills for albums
+  const albumFilterPills = document.querySelectorAll('.album-year-filter-pill');
+  const albumItems = document.querySelectorAll('.album-item');
+
+  albumFilterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const selectedYear = pill.getAttribute('data-year');
+
+      // Update active pill styling
+      albumFilterPills.forEach(p => {
+        p.classList.remove('bg-gray-900', 'text-white');
+        p.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+      });
+      pill.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+      pill.classList.add('bg-gray-900', 'text-white');
+
+      // Filter albums
+      albumItems.forEach(album => {
+        const albumYear = album.getAttribute('data-year');
+        const albumElement = album as HTMLElement;
+        if (selectedYear === 'all' || albumYear === selectedYear) {
+          albumElement.style.display = 'block';
+        } else {
+          albumElement.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>

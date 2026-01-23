@@ -34,6 +34,19 @@ export const musicType = defineType({
 		defineField({
 			name: "featured",
 			type: "boolean"
+		}),
+		defineField({
+			name: "currentlyListening",
+			title: "Currently Listening",
+			type: "boolean",
+			description: "Mark this album as currently being listened to"
+		}),
+		defineField({
+			name: "yearListened",
+			title: "Year Listened",
+			type: "number",
+			description: "The year this album was listened to",
+			validation: Rule => Rule.integer().min(1900).max(new Date().getFullYear() + 1)
 		})
 	]
 })

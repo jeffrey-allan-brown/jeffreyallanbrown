@@ -9,7 +9,24 @@ export async function getAlbums() {
 			artist,
 			"cover": cover.asset->url,
 			color,
-			"slug": slug.current
+			"slug": slug.current,
+			currentlyListening,
+			yearListened
 		}`
+	)
+}
+
+export async function getAlbumBySlug(slug) {
+	return client.fetch(
+		groq`*[_type == "music" && slug.current == $slug][0]{
+			_id,
+			title,
+			artist,
+			"cover": cover.asset->url,
+			color,
+			"slug": slug.current,
+			currentlyListening,
+			yearListened
+		}`, {slug: slug}
 	)
 }

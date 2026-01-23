@@ -1,10 +1,15 @@
 ---
-const { cover, title, author, slug } = Astro.props;
+const { cover, title, author, slug, currentlyReading } = Astro.props;
 ---
 
 <div class="w-full max-w-xs sm:max-w-sm md:max-w-md xl:w-64 mx-auto rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
-  <a href={slug} class="block">
+  <a href={`/books/${slug}`} class="block">
     <div class="flex relative group bg-neutral-50 aspect-square items-center justify-center">
+      {currentlyReading && (
+        <div class="absolute top-3 right-3 z-10 bg-blue-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-lg">
+          In Progress
+        </div>
+      )}
       <div class="book mx-auto scale-90 sm:scale-100 transition-transform duration-300 group-hover:scale-105">
         <div
           class="book-cover bg-cover bg-center rounded-md"

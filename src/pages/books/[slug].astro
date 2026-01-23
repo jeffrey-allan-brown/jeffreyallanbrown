@@ -1,0 +1,125 @@
+---
+import { client } from "../../sanity/lib/client";
+import { getBookBySlug } from "../../sanity/lib/documents/books";
+
+import PrimaryLayout from "../../layouts/primary_layout.astro";
+import Navigation from "../../components/shared/navigation.astro";
+
+export async function getStaticPaths() {
+  const books = await client.fetch(`*[_type == "book" && defined(slug.current)]{
+    "slug": slug.current
+  }`);
+
+  return (books || []).map((book: any) => ({
+    params: { slug: book.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const book = await getBookBySlug(slug);
+---
+
+<PrimaryLayout page_title={book.title}>
+  <div class="overflow-hidden">
+    <div class="relative">
+      <div class="absolute inset-2 bottom-0 rounded-4xl ring-1 ring-black/5 ring-inset bg-linear-115 from-[#ffffff] from-28% via-[#F5F5F5] via-70% to-[#EBEBEB] sm:bg-linear-145"></div>
+      <div class="relative px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:max-w-7xl">
+          <Navigation />
+        </div>
+      </div>
+    </div>
+    <main class="overflow-hidden">
+      <div class="relative mx-auto max-w-7xl">
+        <div class="absolute -top-44 -right-60 h-60 w-xl transform-gpu md:right-0 bg-linear-115 from-[#ffffff] from-28% via-[#f5f5f5] via-70% to-[#f5f5f5] rotate-[-10deg] rounded-full blur-3xl"></div>
+      </div>
+      <div class="px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:max-w-7xl">
+          <div class="mb-8">
+            <a href="/media" class="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-2">
+              <span>←</span> Back to Media
+            </a>
+          </div>
+
+          <div class="mt-8 grid grid-cols-1 gap-12 pb-24 lg:grid-cols-[1fr_2fr]">
+            <!-- Book Cover and Details -->
+            <div class="flex flex-col gap-6">
+              <div class="relative">
+                {book.currentlyReading && (
+                  <div class="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-blue-500 text-white text-sm font-semibold px-3 py-1.5 rounded-full shadow-lg">
+                    Currently Reading
+                  </div>
+                )}
+                <div class="book mx-auto scale-100 max-w-xs">
+                  <div
+                    class="book-cover bg-cover bg-center rounded-md shadow-2xl"
+                    style={{ backgroundImage: `url(${book.cover})` }}
+                  >
+                    <div class="effect"></div>
+                    <div class="light"></div>
+                  </div>
+                  <div class="book-inside"></div>
+                </div>
+              </div>
+
+              <div class="text-center lg:text-left">
+                <h1 class="text-3xl font-light text-gray-900 mb-2">{book.title}</h1>
+                <p class="text-xl text-gray-600 mb-2">{book.author}</p>
+                {book.yearRead && (
+                  <p class="text-sm text-gray-500 mb-4">Read in {book.yearRead}</p>
+                )}
+
+                <div class="flex justify-center lg:justify-start items-center gap-0.5 text-yellow-400 text-2xl mb-6">
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                  <span class="text-neutral-300">☆</span>
+                  <span class="text-neutral-300">☆</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Review Content -->
+            <div class="text-gray-700">
+              <div class="max-w-none">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">My Review</h2>
+
+                <div class="prose prose-lg max-w-none">
+                  <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                  </p>
+
+                  <p>
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  </p>
+
+                  <h3>What I Loved</h3>
+                  <p>
+                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                  </p>
+
+                  <h3>Key Takeaways</h3>
+                  <ul>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
+                    <li>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</li>
+                    <li>Ut enim ad minim veniam, quis nostrud exercitation ullamco</li>
+                    <li>Duis aute irure dolor in reprehenderit in voluptate velit esse</li>
+                  </ul>
+
+                  <h3>Final Thoughts</h3>
+                  <p>
+                    Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.
+                  </p>
+
+                  <p>
+                    At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</PrimaryLayout>

@@ -30,6 +30,19 @@ export const bookType = defineType({
 		defineField({
 			name: "featured",
 			type: "boolean"
+		}),
+		defineField({
+			name: "currentlyReading",
+			title: "Currently Reading",
+			type: "boolean",
+			description: "Mark this book as currently being read"
+		}),
+		defineField({
+			name: "yearRead",
+			title: "Year Read",
+			type: "number",
+			description: "The year this book was completed",
+			validation: Rule => Rule.integer().min(1900).max(new Date().getFullYear() + 1)
 		})
 	]
 })
