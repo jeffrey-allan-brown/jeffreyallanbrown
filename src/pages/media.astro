@@ -1,6 +1,5 @@
 ---
 import PrimaryLayout from "../layouts/primary_layout.astro";
-import Navigation from "../components/shared/navigation.astro";
 import PageHeader from "../components/shared/page_header.astro";
 import Book from "../components/books/Book.astro";
 import Album from "../components/albums/Album.astro";
@@ -8,178 +7,179 @@ import Album from "../components/albums/Album.astro";
 import { getBooks } from "../sanity/lib/documents/books";
 const books = await getBooks();
 
-// Extract unique years from books and sort them in descending order
-const years = [...new Set(books.map((book: any) => book.yearRead).filter(Boolean))].sort((a: any, b: any) => b - a);
+const years = [...new Set(books.map((b: any) => b.yearRead).filter(Boolean))].sort((a: any, b: any) => b - a);
 const currentYear = new Date().getFullYear();
-
-// Check if current year exists in books data
 const hasCurrentYearBooks = years.includes(currentYear);
 const defaultBookYear = hasCurrentYearBooks ? currentYear : 'all';
 
 import { getAlbums } from "../sanity/lib/documents/music";
 const albums = await getAlbums();
 
-// Extract unique years from albums and sort them in descending order
-const albumYears = [...new Set(albums.map((album: any) => album.yearListened).filter(Boolean))].sort((a: any, b: any) => b - a);
-
-// Check if current year exists in albums data
+const albumYears = [...new Set(albums.map((a: any) => a.yearListened).filter(Boolean))].sort((a: any, b: any) => b - a);
 const hasCurrentYearAlbums = albumYears.includes(currentYear);
 const defaultAlbumYear = hasCurrentYearAlbums ? currentYear : 'all';
-
 ---
+
 <PrimaryLayout page_title="media">
-  <div class="overflow-hidden">
-    <div class="relative">
-      <div class="absolute inset-2 bottom-0 rounded-4xl ring-1 ring-black/5 ring-inset bg-linear-115 from-[#ffffff] from-28% via-[#F5F5F5] via-70% to-[#EBEBEB] sm:bg-linear-145"></div>
-      <div class="relative px-6 lg:px-8">
-        <div class="mx-auto max-w-2xl lg:max-w-7xl">
-          <Navigation />
+  <main class="page-main">
+    <div class="media-container">
+
+      <!-- Books -->
+      <div class="media-section">
+        <PageHeader
+          heading="books"
+          subheading="things i've been reading"
+          content="books that I've completed recently."
+        />
+
+        {years.length > 0 && (
+          <div class="filter-row">
+            <button class="filter-pill pill-active year-filter-pill" data-year="all">All Years</button>
+            {(years as any[]).map((year) => (
+              <button
+                class={`filter-pill year-filter-pill${year === defaultBookYear ? ' pill-active' : ''}`}
+                data-year={year}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div class="scroll-row" id="books-list">
+          {(books as any[]).map((book) => (
+            <div
+              class="scroll-item book-item"
+              data-year={book.yearRead || 'unknown'}
+              style={defaultBookYear !== 'all' && book.yearRead !== defaultBookYear ? 'display:none' : ''}
+            >
+              <Book
+                title={book.title}
+                author={book.author}
+                cover={book.cover}
+                slug={book.slug}
+                currentlyReading={book.currentlyReading}
+              />
+            </div>
+          ))}
         </div>
       </div>
+
+      <hr class="section-divider" />
+
+      <!-- Albums -->
+      <div class="media-section">
+        <PageHeader
+          heading="albums"
+          subheading="things i've been listening to"
+          content="albums that i've listened to lately."
+        />
+
+        {albumYears.length > 0 && (
+          <div class="filter-row">
+            <button class="filter-pill pill-active album-year-filter-pill" data-year="all">All Years</button>
+            {(albumYears as any[]).map((year) => (
+              <button
+                class={`filter-pill album-year-filter-pill${year === defaultAlbumYear ? ' pill-active' : ''}`}
+                data-year={year}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div class="scroll-row">
+          {(albums as any[]).map((album) => (
+            <div
+              class="scroll-item album-item"
+              data-year={album.yearListened || 'unknown'}
+              style={defaultAlbumYear !== 'all' && album.yearListened !== defaultAlbumYear ? 'display:none' : ''}
+            >
+              <Album
+                title={album.title}
+                artist={album.artist}
+                cover={album.cover}
+                color={album.color}
+                slug={album.slug}
+                currentlyListening={album.currentlyListening}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
-    <main>
-      <div class="py-16">
-        <div class="px-6 lg:px-8">
-          <div class="mx-auto max-w-2xl lg:max-w-7xl pb-12">
-            <div class="mb-5">
-              <PageHeader heading="books" subheading="things I've been reading" content="books that I've completed recently."/>
-            </div>
-
-            {years.length > 0 && (
-              <div class="mb-6 flex flex-wrap gap-2">
-                <button
-                  class={`year-filter-pill px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${defaultBookYear === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                  data-year="all"
-                >
-                  All Years
-                </button>
-                {years.map((year: any) => (
-                  <button
-                    class={`year-filter-pill px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${year === defaultBookYear ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                    data-year={year}
-                  >
-                    {year}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <div class="overflow-x-auto scrollbar-hide">
-              <div class="flex gap-6 pb-4" id="books-list">
-                {books.map((book: any) => (
-                  <div
-                    class="flex-shrink-0 w-64 book-item"
-                    data-year={book.yearRead || 'unknown'}
-                    style={defaultBookYear !== 'all' && book.yearRead !== defaultBookYear ? 'display: none;' : ''}
-                  >
-                    <Book key={book._id} title={book.title} author={book.author} cover={book.cover} slug={book.slug} currentlyReading={book.currentlyReading}/>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <hr class="my-6 border-t border-gray-200">
-          <div class="mx-auto max-w-2xl lg:max-w-7xl">
-            <div class="mb-5">
-              <PageHeader heading="albums" subheading="things I've been listening to" content="albums that i've listened to lately."/>
-            </div>
-
-            {albumYears.length > 0 && (
-              <div class="mb-6 flex flex-wrap gap-2">
-                <button
-                  class={`album-year-filter-pill px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${defaultAlbumYear === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                  data-year="all"
-                >
-                  All Years
-                </button>
-                {albumYears.map((year: any) => (
-                  <button
-                    class={`album-year-filter-pill px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${year === defaultAlbumYear ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                    data-year={year}
-                  >
-                    {year}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <div class="overflow-x-auto scrollbar-hide">
-              <div class="flex gap-6 pb-4">
-                {albums.map((album: any) => (
-                  <div
-                    class="flex-shrink-0 w-64 album-item"
-                    data-year={album.yearListened || 'unknown'}
-                    style={defaultAlbumYear !== 'all' && album.yearListened !== defaultAlbumYear ? 'display: none;' : ''}
-                  >
-                    <Album key={album._id} title={album.title} artist={album.artist} cover={album.cover} color={album.color} slug={album.slug} currentlyListening={album.currentlyListening}/>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-    </main>
-  </div>
+  </main>
 </PrimaryLayout>
 
 <script>
-  // Handle year filter pills for books
-  const filterPills = document.querySelectorAll('.year-filter-pill');
-  const bookItems = document.querySelectorAll('.book-item');
+  // Book year filter
+  const bookPills = document.querySelectorAll<HTMLButtonElement>('.year-filter-pill');
+  const bookItems = document.querySelectorAll<HTMLElement>('.book-item');
 
-  filterPills.forEach(pill => {
+  bookPills.forEach(pill => {
     pill.addEventListener('click', () => {
-      const selectedYear = pill.getAttribute('data-year');
-
-      // Update active pill styling
-      filterPills.forEach(p => {
-        p.classList.remove('bg-gray-900', 'text-white');
-        p.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-      });
-      pill.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-      pill.classList.add('bg-gray-900', 'text-white');
-
-      // Filter books
-      bookItems.forEach(book => {
-        const bookYear = book.getAttribute('data-year');
-        const bookElement = book as HTMLElement;
-        if (selectedYear === 'all' || bookYear === selectedYear) {
-          bookElement.style.display = 'block';
-        } else {
-          bookElement.style.display = 'none';
-        }
+      const year = pill.dataset.year;
+      bookPills.forEach(p => p.classList.remove('pill-active'));
+      pill.classList.add('pill-active');
+      bookItems.forEach(item => {
+        item.style.display = (year === 'all' || item.dataset.year === year) ? '' : 'none';
       });
     });
   });
 
-  // Handle year filter pills for albums
-  const albumFilterPills = document.querySelectorAll('.album-year-filter-pill');
-  const albumItems = document.querySelectorAll('.album-item');
+  // Album year filter
+  const albumPills = document.querySelectorAll<HTMLButtonElement>('.album-year-filter-pill');
+  const albumItems = document.querySelectorAll<HTMLElement>('.album-item');
 
-  albumFilterPills.forEach(pill => {
+  albumPills.forEach(pill => {
     pill.addEventListener('click', () => {
-      const selectedYear = pill.getAttribute('data-year');
-
-      // Update active pill styling
-      albumFilterPills.forEach(p => {
-        p.classList.remove('bg-gray-900', 'text-white');
-        p.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-      });
-      pill.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-      pill.classList.add('bg-gray-900', 'text-white');
-
-      // Filter albums
-      albumItems.forEach(album => {
-        const albumYear = album.getAttribute('data-year');
-        const albumElement = album as HTMLElement;
-        if (selectedYear === 'all' || albumYear === selectedYear) {
-          albumElement.style.display = 'block';
-        } else {
-          albumElement.style.display = 'none';
-        }
+      const year = pill.dataset.year;
+      albumPills.forEach(p => p.classList.remove('pill-active'));
+      pill.classList.add('pill-active');
+      albumItems.forEach(item => {
+        item.style.display = (year === 'all' || item.dataset.year === year) ? '' : 'none';
       });
     });
   });
 </script>
+
+<style>
+  .media-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+
+  .media-section {
+    margin-bottom: 16px;
+  }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .scroll-row {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    scrollbar-width: none;
+  }
+
+  .scroll-row::-webkit-scrollbar { display: none; }
+
+  .scroll-item {
+    flex-shrink: 0;
+    width: 220px;
+  }
+
+  @media (max-width: 640px) {
+    .media-container { padding: 32px 20px 64px; }
+    .scroll-item { width: 180px; }
+  }
+</style>

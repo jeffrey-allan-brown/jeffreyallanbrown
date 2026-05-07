@@ -1,18 +1,173 @@
 ---
 const { title, slug, date, summary, author, thumbnail } = Astro.props;
 ---
-<div class="relative flex flex-col max-w-100  rounded-3xl bg-white p-2 shadow-md ring-1 shadow-black/5 ring-black/5">
-  <img alt="A crossed out European emblem" class="w-full rounded-2xl object-cover" src={thumbnail}>
-  <div class="flex flex-1 flex-col p-8">
-    <div class="text-sm/5 text-gray-700">{date}</div>
-    <div class="mt-2 text-base/7 font-medium">
-      <a data-headlessui-state="" href={`/blog/${slug}`}>
-        <span class="absolute inset-0"></span>{title}</a>
-        </div>
-        <div class="mt-2 flex-1 text-sm/6 text-gray-500">{summary}</div>
-      <div class="mt-6 flex items-center gap-3">
-        <img alt="" class="aspect-square size-6 rounded-full object-cover" src={author.image}>
-        <div class="text-sm/5 text-gray-700">{author.name}</div>
+<article class="featured-article">
+  <div class="fa-inner">
+    <time class="fa-date">{date}</time>
+    <h3 class="fa-title">
+      <a href={`/blog/${slug}`}>
+        <span class="absolute inset-0"></span>
+        {title}
+      </a>
+    </h3>
+    {summary && <p class="fa-summary">{summary}</p>}
+    {thumbnail && (
+      <div class="fa-thumb-wrap">
+        <img src={thumbnail} alt={title} class="fa-thumb" />
       </div>
+    )}
+    {author && (
+      <div class="fa-author">
+        {author.image && <img src={author.image} alt={author.name} class="fa-author-avatar" />}
+        <span>{author.name}</span>
+      </div>
+    )}
+    <span class="fa-read-more" aria-hidden="true">
+      Read more
+      <svg viewBox="0 0 24 6" class="fa-arrow">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M24 3 18 .5v2H0v1h18v2L24 3Z"></path>
+      </svg>
+    </span>
   </div>
-</div>
+</article>
+
+<style>
+  .featured-article {
+    position: relative;
+  }
+
+  .fa-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 28px;
+    height: 100%;
+  }
+
+  /* L-shaped left border */
+  .fa-inner::before,
+  .fa-inner::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 1px;
+  }
+
+  .fa-inner::before {
+    top: 0;
+    height: 28px;
+    background: var(--white);
+    transition: background 0.2s;
+  }
+
+  .fa-inner::after {
+    top: 36px;
+    bottom: 0;
+    background: var(--border);
+  }
+
+  .featured-article:hover .fa-inner::before {
+    background: var(--dimmer);
+  }
+
+  .fa-date {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dimmer);
+    margin-bottom: 10px;
+  }
+
+  .fa-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--white);
+    margin-top: 4px;
+    margin-bottom: 12px;
+  }
+
+  .fa-title a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.2s;
+  }
+
+  .featured-article:hover .fa-title a { color: var(--dim); }
+
+  .fa-summary {
+    font-size: 0.875rem;
+    line-height: 1.65;
+    color: var(--dim);
+    margin-bottom: 16px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .fa-thumb-wrap {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--black-80);
+    margin-bottom: 16px;
+    order: -1;
+  }
+
+  .fa-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(0.3);
+    transition: filter 0.4s ease, transform 0.4s ease;
+  }
+
+  .featured-article:hover .fa-thumb {
+    filter: grayscale(0);
+    transform: scale(1.02);
+  }
+
+  .fa-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 0.8rem;
+    color: var(--dimmer);
+    font-weight: 500;
+  }
+
+  .fa-author-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .fa-read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+    margin-top: auto;
+  }
+
+  .featured-article:hover .fa-read-more { color: var(--dim); }
+
+  .fa-arrow {
+    width: 18px;
+    flex-shrink: 0;
+    fill: currentColor;
+  }
+</style>

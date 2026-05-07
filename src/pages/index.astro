@@ -22,6 +22,9 @@ const recentNotes  = allNotes.slice(0, 6);
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+    <script is:inline>
+      (function(){const t=localStorage.getItem('theme');if(t!=='dark')document.documentElement.setAttribute('data-theme','light');})();
+    </script>
   </head>
   <body>
 
@@ -37,6 +40,18 @@ const recentNotes  = allNotes.slice(0, 6);
           <a href="/thoughts">thoughts</a>
           <a href="/about">about</a>
         </nav>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4.5"/>
+            <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
         <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
           <span></span>
           <span></span>
@@ -178,6 +193,20 @@ const recentNotes  = allNotes.slice(0, 6);
       header?.classList.toggle('scrolled', window.scrollY > 10);
     }, { passive: true });
 
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+    themeBtn?.addEventListener('click', () => {
+      const isLight = html.getAttribute('data-theme') === 'light';
+      if (isLight) {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        html.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
     const toggle = document.getElementById('menu-toggle');
     const nav = document.getElementById('main-nav');
     toggle?.addEventListener('click', () => {
@@ -257,7 +286,8 @@ const recentNotes  = allNotes.slice(0, 6);
               trail[i].y + 50 * Math.random() - 25,
               mx, my
             );
-            ctx.strokeStyle = 'rgb(255, 255, 255)';
+            ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'light'
+              ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.85)';
             ctx.lineWidth = 3;
             ctx.stroke();
           }
@@ -623,20 +653,39 @@ const recentNotes  = allNotes.slice(0, 6);
   }
 
   :root {
-    --black-100: #171717;
-    --black-90: #222222;
-    --black-80: #343434;
-    --black-70: #484848;
-    --white: #f5f4f0;
-    --dim: var(--black-70);
-    --dimmer: var(--black-80);
-    --border: var(--black-70);
+    /* Dark mode — black scale = backgrounds, white scale = text */
+    --black-100: #0A0E15;
+    --black-90:  #212631;
+    --black-80:  #373F4E;
+    --black-70:  #4E576A;
+    --black-60:  #667085;
+    --white:     #FFFFFF;
+    --dim:       #E0E4EB;   /* white-80 — secondary text */
+    --dimmer:    #BFC6D4;   /* white-60 — tertiary text  */
+    --border:    #4E576A;   /* black-70                  */
     --font-body: 'Space Grotesk', sans-serif;
     --font-display: 'Syne', sans-serif;
   }
 
+  html[data-theme="light"] {
+    /* Light mode — white scale = backgrounds, black scale = text */
+    --black-100: #FFFFFF;
+    --black-90:  #F0F1F5;
+    --black-80:  #E0E4EB;
+    --black-70:  #D1D6E0;
+    --black-60:  #BFC6D4;
+    --white:     #0A0E15;   /* d.reverse — primary text  */
+    --dim:       #4E576A;   /* black-70  — secondary text */
+    --dimmer:    #667085;   /* black-60  — tertiary text  */
+    --border:    #D1D6E0;   /* white-70                  */
+  }
+
   html {
     background: #000;
+  }
+
+  html[data-theme="light"] {
+    background: #D1D6E0;
   }
 
   body {
@@ -707,6 +756,27 @@ const recentNotes  = allNotes.slice(0, 6);
   nav a:hover {
     color: var(--white);
   }
+
+  .theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--dim);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .theme-toggle:hover { color: var(--white); }
+
+  .theme-toggle svg { width: 15px; height: 15px; }
+
+  /* Show sun in dark mode (offers switch to light), moon in light mode */
+  .icon-moon { display: none; }
+  html[data-theme="light"] .icon-sun  { display: none; }
+  html[data-theme="light"] .icon-moon { display: block; }
 
   /* ── Hero ── */
 
@@ -1137,15 +1207,15 @@ const recentNotes  = allNotes.slice(0, 6);
     border: none;
     border-radius: 2px;
     text-decoration: none;
-    color: #1a1a1a;
+    color: #0A0E15;
     overflow: hidden;
 
-    /* Dot-matrix paper */
-    background-color: #efefef;
-    background-image: radial-gradient(circle, rgba(130, 130, 130, 0.30) 1px, transparent 1px);
+    /* Dot-matrix paper — dark mode: light gray paper on dark background */
+    background-color: #E0E4EB;
+    background-image: radial-gradient(circle, rgba(78, 87, 106, 0.30) 1px, transparent 1px);
     background-size: 14px 14px;
 
-    /* Paper lifted off the dark surface */
+    /* Paper lifted off the surface */
     box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.25);
 
     transition: transform 0.18s ease, box-shadow 0.18s ease;
@@ -1157,8 +1227,8 @@ const recentNotes  = allNotes.slice(0, 6);
     position: absolute;
     left: 0; top: 0; bottom: 0;
     width: 26px;
-    background-color: #e0e0e0;
-    background-image: radial-gradient(circle, #171717 4px, transparent 4.5px);
+    background-color: #D1D6E0;
+    background-image: radial-gradient(circle, #4E576A 4px, transparent 4.5px);
     background-size: 26px 28px;
     background-repeat: repeat-y;
     background-position: center 8px;
@@ -1188,14 +1258,14 @@ const recentNotes  = allNotes.slice(0, 6);
     font-weight: 600;
     line-height: 1.35;
     letter-spacing: -0.01em;
-    color: #1a1208;
+    color: #0A0E15;
   }
 
   .note-excerpt {
     font-size: 0.77rem;
     font-weight: 400;
     line-height: 1.6;
-    color: #4a3c28;
+    color: #373F4E;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -1214,8 +1284,8 @@ const recentNotes  = allNotes.slice(0, 6);
     font-size: 0.62rem;
     font-weight: 500;
     letter-spacing: 0.04em;
-    color: #5a4530;
-    border: 1px solid rgba(120, 95, 58, 0.35);
+    color: #4E576A;
+    border: 1px solid rgba(78, 87, 106, 0.35);
     padding: 2px 7px;
     border-radius: 2px;
   }
@@ -1238,6 +1308,32 @@ const recentNotes  = allNotes.slice(0, 6);
     .books-grid { grid-template-columns: repeat(3, 1fr); }
     .albums-grid { grid-template-columns: repeat(3, 1fr); }
     .notes-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ── Light mode note card overrides ── */
+
+  html[data-theme="light"] .note-card {
+    background-color: #FFFFFF;
+    background-image: radial-gradient(circle, rgba(78, 87, 106, 0.16) 1px, transparent 1px);
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.10), 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  html[data-theme="light"] .note-card::before {
+    background-color: #F0F1F5;
+    background-image: radial-gradient(circle, #BFC6D4 4px, transparent 4.5px);
+  }
+
+  html[data-theme="light"] .note-card:hover {
+    box-shadow: 3px 5px 14px rgba(0, 0, 0, 0.14), 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  html[data-theme="light"] .note-excerpt {
+    color: #4E576A;
+  }
+
+  html[data-theme="light"] .note-tag {
+    color: #667085;
+    border-color: rgba(102, 112, 133, 0.30);
   }
 
   /* ── Mobile menu toggle button ── */

@@ -1,90 +1,45 @@
 ---
 const { title, date, excerpt, slug, tags = [], maturity } = Astro.props;
 
-// Maturity badges
 const maturityConfig = {
-  seedling: { emoji: "🌱", color: "bg-green-50 border-green-200" },
-  budding: { emoji: "🌿", color: "bg-emerald-50 border-emerald-200" },
-  evergreen: { emoji: "🌲", color: "bg-teal-50 border-teal-200" }
+  seedling: { emoji: "🌱" },
+  budding:  { emoji: "🌿" },
+  evergreen:{ emoji: "🌲" },
 };
 const maturityData = maturityConfig[maturity as keyof typeof maturityConfig];
 ---
 
-<article class="note-container relative group">
-  <a href={`/garden/${slug}`} class="block">
-    <!-- Dot matrix paper effect -->
-    <div class="note-paper relative overflow-hidden">
-      <!-- Perforated edge (left side) -->
-      <div class="absolute left-0 top-0 bottom-0 w-8 flex flex-col justify-around items-center bg-[#f0f0f0] border-r border-dashed border-[#d0d0d0]">
-        {[...Array(12)].map(() => (
-          <div class="w-2 h-2 rounded-full bg-[#e0e0e0] border border-[#d0d0d0]"></div>
-        ))}
-      </div>
-
-      <!-- Main content area -->
-      <div class="pl-12 pr-6 py-6">
-        <!-- Date and maturity (top right) -->
-        <div class="absolute top-4 right-4 flex items-center gap-2">
-          {maturityData && (
-            <span class={`text-lg ${maturityData.color} px-2 py-1 rounded border`}>
-              {maturityData.emoji}
-            </span>
-          )}
-          {date && (
-            <span class="text-xs font-mono text-[#666] opacity-60">
-              {date}
-            </span>
-          )}
-        </div>
-
-        <!-- Title -->
-        <h3 class="text-xl font-mono font-bold text-[#1a1a1a] mb-3 tracking-tight leading-tight pr-28">
-          {title}
-        </h3>
-
-        <!-- Excerpt -->
-        {excerpt && (
-          <p class="text-sm font-mono text-[#333] leading-relaxed mb-4 line-clamp-3">
-            {excerpt}
-          </p>
-        )}
-
-        <!-- Tags -->
-        {tags.length > 0 && (
-          <div class="flex flex-wrap gap-2 mt-4">
-            {tags.map((tag: string) => (
-              <span class="text-xs font-mono px-2 py-0.5 bg-[#e0e0e0] text-[#555] border border-[#d0d0d0] rounded">
-                #{tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <!-- Read more indicator -->
-        <div class="mt-4 text-xs font-mono text-[#666] flex items-center gap-1">
-          <span>→ READ MORE</span>
+<article class="note-container">
+  <a href={`/garden/${slug}`} class="note-paper">
+    <div class="note-content">
+      <div class="note-header">
+        <h3 class="note-title">{title}</h3>
+        <div class="note-meta">
+          {maturityData && <span class="note-maturity">{maturityData.emoji}</span>}
+          {date && <span class="note-date">{date}</span>}
         </div>
       </div>
 
-      <!-- Horizontal printer bands (subtle) -->
-      <div class="absolute inset-0 pointer-events-none opacity-[0.03]">
-        {[...Array(20)].map((_, i) => (
-          <div
-            class="absolute left-0 right-0 h-px bg-[#666]"
-            style={{ top: `${(i + 1) * 5}%` }}
-          ></div>
-        ))}
-      </div>
+      {excerpt && <p class="note-excerpt">{excerpt}</p>}
 
-      <!-- Dot matrix texture overlay -->
-      <div class="dot-matrix-overlay absolute inset-0 pointer-events-none"></div>
+      {tags.length > 0 && (
+        <div class="note-tags">
+          {tags.map((tag: string) => (
+            <span class="note-tag">#{tag}</span>
+          ))}
+        </div>
+      )}
+
+      <span class="note-read-more">→ READ MORE</span>
     </div>
+
+    <div class="dot-matrix-overlay" aria-hidden="true"></div>
   </a>
 </article>
 
 <style>
   .note-container {
-    transition: transform 0.2s ease;
+    transition: transform 0.18s ease;
   }
 
   .note-container:hover {
@@ -92,35 +47,133 @@ const maturityData = maturityConfig[maturity as keyof typeof maturityConfig];
   }
 
   .note-paper {
-    background: linear-gradient(
-      180deg,
-      #f5f5f5 0%,
-      #e8e8e8 50%,
-      #f5f5f5 100%
-    );
-    border: 1px solid #d0d0d0;
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.08),
-      0 4px 6px rgba(0, 0, 0, 0.05);
-    min-height: 200px;
+    position: relative;
+    display: block;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--note-text);
+    background-color: var(--note-paper);
+    background-image: radial-gradient(circle, rgba(78,87,106,0.2) 1px, transparent 1px);
+    background-size: 14px 14px;
+    border: 1px solid var(--note-border);
+    border-radius: 2px;
+    box-shadow: 2px 3px 10px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.15);
+    min-height: 180px;
   }
 
   .note-container:hover .note-paper {
-    box-shadow:
-      0 4px 6px rgba(0, 0, 0, 0.1),
-      0 8px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 3px 6px 16px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.2);
   }
 
-  /* Dot matrix texture using CSS pattern */
+  /* Feed strip */
+  .note-paper::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 26px;
+    background-color: var(--note-feed);
+    background-image: radial-gradient(circle, var(--note-sprocket) 4px, transparent 4.5px);
+    background-size: 26px 28px;
+    background-repeat: repeat-y;
+    background-position: center 8px;
+  }
+
+  /* Margin line */
+  .note-paper::after {
+    content: '';
+    position: absolute;
+    left: 26px; top: 0; bottom: 0;
+    width: 1.5px;
+    background: rgba(208,58,58,0.4);
+  }
+
+  .note-content {
+    position: relative;
+    z-index: 1;
+    padding: 18px 18px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .note-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .note-title {
+    font-family: monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--note-text);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    flex: 1;
+  }
+
+  .note-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .note-maturity {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .note-date {
+    font-size: 0.62rem;
+    font-family: monospace;
+    color: var(--note-dimmer);
+    opacity: 0.75;
+    white-space: nowrap;
+  }
+
+  .note-excerpt {
+    font-family: monospace;
+    font-size: 0.78rem;
+    color: var(--note-excerpt);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .note-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .note-tag {
+    font-family: monospace;
+    font-size: 0.62rem;
+    font-weight: 500;
+    color: var(--note-tag);
+    border: 1px solid var(--note-border);
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+
+  .note-read-more {
+    font-family: monospace;
+    font-size: 0.65rem;
+    color: var(--note-dimmer);
+    margin-top: 2px;
+  }
+
   .dot-matrix-overlay {
-    background-image: radial-gradient(circle, #00000008 1px, transparent 1px);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px);
     background-size: 4px 4px;
-    opacity: 0.5;
-  }
-
-  /* Text selection styling to match theme */
-  .note-paper ::selection {
-    background: #d0d0d0;
-    color: #1a1a1a;
+    opacity: 0.4;
   }
 </style>

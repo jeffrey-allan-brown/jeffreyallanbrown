@@ -2,140 +2,222 @@
 import { client } from "../../sanity/lib/client";
 import { renderPortableText } from "../../sanity/lib/portableText";
 import { getProjectBySlug } from "../../sanity/lib/documents/projects";
-
 import PrimaryLayout from "../../layouts/primary_layout.astro";
-import Navigation from "../../components/shared/navigation.astro";
 
 export async function getStaticPaths() {
-  const projects = await client.fetch(`*[_type == "project" && defined(slug.current)]{"slug": slug.current}`);
-  return (projects || []).map((project: any) => ({
-    params: { slug: project.slug },
-  }));
+  const projects = await client.fetch(`*[_type == "project" && defined(slug.current)]{ "slug": slug.current }`);
+  return (projects || []).map((p: any) => ({ params: { slug: p.slug } }));
 }
 
 const { slug } = Astro.params;
 const project = await getProjectBySlug(slug);
 const content = renderPortableText(project.content);
 
-const statusConfig = {
-  "in-progress": { label: "In Progress", color: "bg-blue-100 text-blue-700 border-blue-300" },
-  "completed": { label: "Completed", color: "bg-green-100 text-green-700 border-green-300" },
-  "archived": { label: "Archived", color: "bg-gray-100 text-gray-700 border-gray-300" }
+const statusConfig: Record<string, { label: string; cls: string }> = {
+  'in-progress': { label: 'In Progress', cls: 'status-progress' },
+  'completed':   { label: 'Completed',   cls: 'status-done'     },
+  'archived':    { label: 'Archived',    cls: 'status-archived' },
 };
-const statusData = statusConfig[project.status as keyof typeof statusConfig];
+const status = statusConfig[project.status as string];
 ---
 
 <PrimaryLayout page_title={project.title}>
-  <div class="overflow-hidden">
-    <div class="relative">
-      <div class="absolute inset-2 bottom-0 rounded-4xl ring-1 ring-black/5 ring-inset bg-linear-115 from-[#ffffff] from-28% via-[#F5F5F5] via-70% to-[#EBEBEB] sm:bg-linear-145"></div>
-      <div class="relative px-6 lg:px-8">
-        <div class="mx-auto max-w-2xl lg:max-w-7xl">
-          <Navigation />
-        </div>
-      </div>
-    </div>
-    <main class="overflow-hidden">
-      <div class="relative mx-auto max-w-7xl">
-        <div class="absolute -top-44 -right-60 h-60 w-xl transform-gpu md:right-0 bg-linear-115 from-[#ffffff] from-28% via-[#f5f5f5] via-70% to-[#f5f5f5] rotate-[-10deg] rounded-full blur-3xl"></div>
-      </div>
-      <div class="px-6 lg:px-8">
-        <div class="mx-auto max-w-4xl">
-          <div class="mb-8">
-            <a href="/projects" class="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-2">
-              <span>←</span> Back to Projects
-            </a>
+  <main class="page-main">
+    <div class="project-detail-container">
+
+      <a href="/projects" class="back-link">← Back to Projects</a>
+
+      <article class="project-article">
+        {project.thumbnail && (
+          <div class="project-banner">
+            <img src={project.thumbnail} alt={project.title} />
+          </div>
+        )}
+
+        <div class="project-article-body">
+          <!-- Header -->
+          <div class="project-article-header">
+            <div class="project-header-meta">
+              {status && <span class={`project-status ${status.cls}`}>{status.label}</span>}
+              {project.startDate && (
+                <span class="project-date">
+                  Started {new Date(project.startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </span>
+              )}
+              {project.endDate && (
+                <span class="project-date">
+                  · Completed {new Date(project.endDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </span>
+              )}
+            </div>
+            <h1 class="project-article-title">{project.title}</h1>
+            {project.description && (
+              <p class="project-article-desc">{project.description}</p>
+            )}
+            <div class="project-article-links">
+              {project.projectUrl && (
+                <a href={project.projectUrl} target="_blank" rel="noopener noreferrer" class="btn-primary">
+                  <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                  </svg>
+                  Live Demo
+                </a>
+              )}
+              {project.githubUrl && (
+                <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" class="btn-outline">
+                  <svg class="btn-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"></path>
+                  </svg>
+                  GitHub
+                </a>
+              )}
+            </div>
           </div>
 
-          <article class="bg-white rounded-lg border border-gray-200 shadow-sm mb-12">
-            {/* Thumbnail */}
-            {project.thumbnail && (
-              <div class="aspect-video overflow-hidden bg-gray-100 rounded-t-lg">
-                <img src={project.thumbnail} alt={project.title} class="h-full w-full object-cover" />
+          <!-- Technologies -->
+          {project.technologies && project.technologies.length > 0 && (
+            <div class="project-tech-section">
+              <h2 class="project-tech-label">Technologies</h2>
+              <div class="project-tech-tags">
+                {(project.technologies as string[]).map((tech) => (
+                  <span class="tech-tag">{tech}</span>
+                ))}
               </div>
-            )}
-
-            <div class="p-8">
-              {/* Header */}
-              <div class="mb-6">
-                {/* Status and dates */}
-                <div class="flex flex-wrap items-center gap-3 mb-4 text-sm text-gray-600">
-                  {statusData && (
-                    <span class={`px-3 py-1 rounded border ${statusData.color}`}>
-                      {statusData.label}
-                    </span>
-                  )}
-                  {project.startDate && (
-                    <span>Started: {new Date(project.startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-                  )}
-                  {project.endDate && (
-                    <span>• Completed: {new Date(project.endDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-                  )}
-                </div>
-
-                {/* Title */}
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-950 mb-4 tracking-tight">
-                  {project.title}
-                </h1>
-
-                {/* Description */}
-                {project.description && (
-                  <p class="text-xl text-gray-700 leading-relaxed">
-                    {project.description}
-                  </p>
-                )}
-
-                {/* Links */}
-                <div class="flex gap-4 mt-6">
-                  {project.projectUrl && (
-                    <a
-                      href={project.projectUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                      </svg>
-                      View Live Project
-                    </a>
-                  )}
-                  {project.githubUrl && (
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-                    >
-                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"></path>
-                      </svg>
-                      View on GitHub
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              {/* Technologies */}
-              {project.technologies && project.technologies.length > 0 && (
-                <div class="mb-8 pb-8 border-b border-gray-200">
-                  <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Technologies Used</h2>
-                  <div class="flex flex-wrap gap-2">
-                    {project.technologies.map((tech: string) => (
-                      <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded border border-gray-200">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Content */}
-              <div class="prose prose-gray max-w-none" set:html={content}></div>
             </div>
-          </article>
+          )}
+
+          <!-- Content -->
+          <div class="prose" set:html={content}></div>
         </div>
-      </div>
-    </main>
-  </div>
+      </article>
+
+    </div>
+  </main>
 </PrimaryLayout>
+
+<style>
+  .project-detail-container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 32px 96px;
+  }
+
+  .project-article {
+    background: var(--black-90);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 16px;
+  }
+
+  .project-banner {
+    aspect-ratio: 16 / 6;
+    overflow: hidden;
+    background: var(--black-80);
+  }
+
+  .project-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.15);
+  }
+
+  .project-article-body { padding: 40px; }
+
+  .project-article-header { margin-bottom: 32px; }
+
+  .project-header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-size: 0.8rem;
+    color: var(--dimmer);
+  }
+
+  .project-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+
+  .status-progress { background: rgba(59,130,246,0.12); color: #60a5fa; border-color: rgba(59,130,246,0.3); }
+  .status-done     { background: rgba(34,197,94,0.1);  color: #4ade80; border-color: rgba(34,197,94,0.25); }
+  .status-archived { background: var(--black-80); color: var(--dimmer); border-color: var(--border); }
+
+  .project-date { color: var(--dimmer); }
+
+  .project-article-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--white);
+    line-height: 1.05;
+    margin-bottom: 12px;
+  }
+
+  .project-article-desc {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--dim);
+    margin-bottom: 20px;
+  }
+
+  .project-article-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .project-tech-section {
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+
+  .project-tech-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dimmer);
+    margin-bottom: 12px;
+  }
+
+  .project-tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tech-tag {
+    padding: 4px 12px;
+    background: var(--black-80);
+    color: var(--dim);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    .project-detail-container { padding: 24px 20px 64px; }
+    .project-article-body { padding: 24px; }
+  }
+</style>

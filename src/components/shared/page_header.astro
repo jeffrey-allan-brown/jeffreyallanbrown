@@ -1,6 +1,45 @@
 ---
 const { heading, subheading, content } = Astro.props;
 ---
-<h2 class="font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase data-dark:text-gray-400">{subheading}</h2>
-<h3 class="mt-2 max-w-3xl text-4xl font-medium tracking-tighter text-pretty text-gray-950 data-dark:text-white sm:text-6xl">{heading}</h3>
-<p class="font-light mt-8 max-w-xl text-xl/7 text-gray-950/75 sm:text-3xl/8">{content}</p>
+<div class="page-hdr">
+  {subheading && <p class="page-hdr-sub">{subheading}</p>}
+  <h1 class="page-hdr-h1">{heading}</h1>
+  {content && <p class="page-hdr-desc">{content}</p>}
+</div>
+
+<style>
+  .page-hdr {
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  .page-hdr-sub {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 12px;
+  }
+
+  .page-hdr-h1 {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 7vw, 80px);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+
+  .page-hdr-desc {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--dim);
+    max-width: 520px;
+  }
+</style>

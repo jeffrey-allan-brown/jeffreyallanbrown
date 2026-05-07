@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import Navigation from "../components/shared/navigation.astro";
 const { page_title } = Astro.props;
 ---
 <html lang="en">
@@ -9,11 +10,275 @@ const { page_title } = Astro.props;
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
     <title>jeffreyallanbrown | {page_title}</title>
+    <script is:inline>
+      (function(){const t=localStorage.getItem('theme');if(t!=='dark')document.documentElement.setAttribute('data-theme','light');})();
+    </script>
   </head>
-	<body>
-    <div class="overflow-hidden font-lato">
-      <slot/>
-    </div>
+  <body class="site-page">
+    <div class="site-frame"></div>
+    <Navigation />
+    <slot/>
   </body>
 </html>
+
+<style is:global>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --black-100: #0A0E15;
+    --black-90:  #212631;
+    --black-80:  #373F4E;
+    --black-70:  #4E576A;
+    --black-60:  #667085;
+    --white:     #FFFFFF;
+    --dim:       #E0E4EB;
+    --dimmer:    #BFC6D4;
+    --border:    #4E576A;
+    --font-body: 'Space Grotesk', sans-serif;
+    --font-display: 'Syne', sans-serif;
+    /* Note / dot-matrix paper */
+    --note-paper:    #E0E4EB;
+    --note-feed:     #D1D6E0;
+    --note-sprocket: #4E576A;
+    --note-border:   rgba(78, 87, 106, 0.35);
+    --note-text:     #0A0E15;
+    --note-excerpt:  #373F4E;
+    --note-tag:      #4E576A;
+    --note-dimmer:   #667085;
+  }
+
+  html[data-theme="light"] {
+    --black-100: #FFFFFF;
+    --black-90:  #F0F1F5;
+    --black-80:  #E0E4EB;
+    --black-70:  #D1D6E0;
+    --black-60:  #BFC6D4;
+    --white:     #0A0E15;
+    --dim:       #4E576A;
+    --dimmer:    #667085;
+    --border:    #D1D6E0;
+    /* Note / dot-matrix paper (light mode) */
+    --note-paper:    #FFFFFF;
+    --note-feed:     #F0F1F5;
+    --note-sprocket: #BFC6D4;
+    --note-border:   rgba(102, 112, 133, 0.30);
+    --note-excerpt:  #4E576A;
+    --note-tag:      #667085;
+  }
+
+  html { background: #000; }
+  html[data-theme="light"] { background: #D1D6E0; }
+
+  body.site-page {
+    font-family: var(--font-body);
+    background-color: var(--black-100);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.2'/%3E%3C/svg%3E");
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .site-frame {
+    position: fixed;
+    inset: 0;
+    border: 10px solid var(--black-90);
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* ── Page main wrapper ── */
+  .page-main {
+    padding-top: 90px;
+    padding-bottom: 64px;
+  }
+
+  /* ── Prose overrides ── */
+  .prose { color: var(--dim); }
+  .prose h1, .prose h2, .prose h3, .prose h4 { color: var(--white); margin-top: 1.5em; margin-bottom: 0.5em; }
+  .prose p { margin-bottom: 1em; line-height: 1.7; }
+  .prose a { color: var(--dimmer); }
+  .prose a:hover { color: var(--white); }
+  .prose strong { color: var(--white); }
+  .prose code {
+    background: var(--black-80);
+    color: var(--dim);
+    padding: 0.12em 0.35em;
+    border-radius: 3px;
+    font-size: 0.87em;
+  }
+  .prose pre {
+    background: var(--black-90);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1em 1.25em;
+    overflow-x: auto;
+  }
+  .prose pre code { background: none; padding: 0; }
+  .prose blockquote {
+    border-left: 3px solid var(--border);
+    padding-left: 1em;
+    color: var(--dimmer);
+    font-style: italic;
+  }
+  .prose hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
+  .prose ul, .prose ol { padding-left: 1.5em; margin-bottom: 1em; }
+  .prose li { margin-bottom: 0.3em; line-height: 1.6; }
+  .prose img { border-radius: 6px; }
+
+  /* ── Shared card patterns ── */
+  .theme-card {
+    background: var(--black-90);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+
+  .theme-card-heading {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  /* ── Filter pills ── */
+  .filter-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    border-radius: 99px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--black-90);
+    color: var(--dim);
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .filter-pill:hover { background: var(--black-80); color: var(--white); }
+  .filter-pill.pill-active {
+    background: var(--white);
+    color: var(--black-100);
+    border-color: var(--white);
+  }
+
+  /* ── Sidebar filter buttons ── */
+  .sidebar-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 400;
+    border-radius: 4px;
+    color: var(--dim);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .sidebar-btn:hover { background: var(--black-80); color: var(--white); }
+  .sidebar-btn.btn-active { background: var(--white); color: var(--black-100); }
+
+  /* ── Back link ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--dim);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+    margin-top: 24px;
+    margin-bottom: 32px;
+  }
+  .back-link:hover { color: var(--white); }
+
+  /* ── Section divider ── */
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* ── Badge / tag ── */
+  .theme-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+    background: var(--black-80);
+    color: var(--dim);
+    border: 1px solid var(--border);
+  }
+
+  .theme-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: var(--black-80);
+    color: var(--dim);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+  }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 99px;
+    background: var(--white);
+    color: var(--black-100);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 99px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .btn-outline:hover { background: var(--black-80); border-color: var(--dim); }
+</style>
