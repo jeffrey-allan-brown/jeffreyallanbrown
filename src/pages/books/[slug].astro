@@ -1,6 +1,7 @@
 ---
 import { client } from "../../sanity/lib/client";
 import { getBookBySlug } from "../../sanity/lib/documents/books";
+import { renderMarkdown } from "../../sanity/lib/portableText";
 import PrimaryLayout from "../../layouts/primary_layout.astro";
 
 export async function getStaticPaths() {
@@ -10,6 +11,7 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const book = await getBookBySlug(slug);
+const content = renderMarkdown(book.content);
 ---
 
 <PrimaryLayout page_title={book.title}>
@@ -48,19 +50,14 @@ const book = await getBookBySlug(slug);
 
         <!-- Review -->
         <div class="book-detail-review">
-          <h2 class="review-heading">My Review</h2>
-          <div class="prose">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            <h3>What I Loved</h3>
-            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
-            <h3>Key Takeaways</h3>
-            <ul>
-              <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit</li>
-              <li>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</li>
-              <li>Ut enim ad minim veniam, quis nostrud exercitation ullamco</li>
-            </ul>
-          </div>
+          {content ? (
+            <>
+              <h2 class="review-heading">My Review</h2>
+              <div class="prose" set:html={content}></div>
+            </>
+          ) : (
+            <p class="review-empty">No review yet.</p>
+          )}
         </div>
 
       </div>

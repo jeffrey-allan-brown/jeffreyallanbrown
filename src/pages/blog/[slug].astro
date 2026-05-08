@@ -1,6 +1,6 @@
 ---
 import { client } from "../../sanity/lib/client";
-import { renderPortableText } from "../../sanity/lib/portableText";
+import { renderMarkdown } from "../../sanity/lib/portableText";
 import { getPostBySlug, getRecentPosts } from "../../sanity/lib/documents/posts";
 import PrimaryLayout from "../../layouts/primary_layout.astro";
 
@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const post = await getPostBySlug(slug);
-const content = renderPortableText(post.content);
+const content = renderMarkdown(post.content);
 
 const allRecent = await getRecentPosts(5);
 const moreArticles = allRecent.filter((p: any) => p.slug !== slug).slice(0, 2);

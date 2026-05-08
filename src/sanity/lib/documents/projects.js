@@ -34,15 +34,7 @@ export async function getProjectBySlug(slug) {
 			startDate,
 			endDate,
 			"slug": slug.current,
-			content[]{
-				...,
-				_type == "image" => {
-					...,
-					"url": asset->url,
-					"metadata": asset->metadata,
-					"alt": alt
-				}
-			}
+			content
 		}`, {slug: slug}
 	)
 }

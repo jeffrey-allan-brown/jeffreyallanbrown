@@ -25,15 +25,7 @@ export async function getNoteBySlug(slug) {
 			tags,
 			maturity,
 			"slug": slug.current,
-			content[]{
-				...,
-				_type == "image" => {
-					...,
-					"url": asset->url,
-					"metadata": asset->metadata,
-					"alt": alt
-				}
-			},
+			content,
 			"relatedNotes": relatedNotes[]->{
 				_id,
 				title,

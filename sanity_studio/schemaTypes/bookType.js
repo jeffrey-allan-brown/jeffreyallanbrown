@@ -32,6 +32,11 @@ export const bookType = defineType({
 			type: "boolean"
 		}),
 		defineField({
+			name: "content",
+			title: "Review",
+			type: "markdown"
+		}),
+		defineField({
 			name: "currentlyReading",
 			title: "Currently Reading",
 			type: "boolean",

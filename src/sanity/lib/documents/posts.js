@@ -50,15 +50,7 @@ export async function getPostBySlug(slug) {
 				"metadata": asset->metadata,
 				"alt": alt
 			},
-			content[]{
-				...,
-				_type == "image" => {
-					...,
-					"url": asset->url,
-					"metadata": asset->metadata,
-					"alt": alt
-				}
-			}
+			content
 		}`,{slug: slug}
 	)
 }

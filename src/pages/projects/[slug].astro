@@ -1,6 +1,6 @@
 ---
 import { client } from "../../sanity/lib/client";
-import { renderPortableText } from "../../sanity/lib/portableText";
+import { renderMarkdown } from "../../sanity/lib/portableText";
 import { getProjectBySlug } from "../../sanity/lib/documents/projects";
 import PrimaryLayout from "../../layouts/primary_layout.astro";
 
@@ -11,7 +11,7 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const project = await getProjectBySlug(slug);
-const content = renderPortableText(project.content);
+const content = renderMarkdown(project.content);
 
 const statusConfig: Record<string, { label: string; cls: string }> = {
   'in-progress': { label: 'In Progress', cls: 'status-progress' },

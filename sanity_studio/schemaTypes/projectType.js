@@ -30,20 +30,7 @@ export const projectType = defineType({
 		defineField({
 			name: "content",
 			title: "Content",
-			type: "array",
-			of: [
-				{type: "block"},
-				{
-					type: "image",
-					fields: [
-						{
-							name: "alt",
-							type: "string",
-							title: "Alternative text"
-						}
-					]
-				}
-			]
+			type: "markdown"
 		}),
 		defineField({
 			name: "thumbnail",

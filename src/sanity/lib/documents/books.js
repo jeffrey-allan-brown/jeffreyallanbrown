@@ -24,7 +24,8 @@ export async function getBookBySlug(slug) {
 			"cover": cover.asset->url,
 			"slug": slug.current,
 			currentlyReading,
-			yearRead
+			yearRead,
+			content
 		}`, {slug: slug}
 	)
 }

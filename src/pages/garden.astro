@@ -118,6 +118,18 @@ const maturityConfig: Record<string, { emoji: string; label: string }> = {
     });
   });
 
+  const initialTag = new URLSearchParams(window.location.search).get('tag');
+  if (initialTag) {
+    const match = [...tagBtns].find(btn => btn.dataset.tag === initialTag);
+    if (match) {
+      selectedTag = initialTag;
+      tagBtns.forEach(b => b.classList.remove('btn-active'));
+      match.classList.add('btn-active');
+      filterNotes();
+      match.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
   maturityBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       selectedMaturity = btn.dataset.maturity || 'all';

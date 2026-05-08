@@ -1,6 +1,6 @@
 ---
 import { client } from "../../sanity/lib/client";
-import { renderPortableText } from "../../sanity/lib/portableText";
+import { renderMarkdown } from "../../sanity/lib/portableText";
 import { getNoteBySlug } from "../../sanity/lib/documents/notes";
 import PrimaryLayout from "../../layouts/primary_layout.astro";
 
@@ -11,7 +11,7 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const note = await getNoteBySlug(slug);
-const content = renderPortableText(note.content);
+const content = renderMarkdown(note.content);
 
 const maturityConfig = {
   seedling:  { emoji: "🌱", label: "Seedling"  },
@@ -28,21 +28,11 @@ const maturity = maturityConfig[note.maturity as keyof typeof maturityConfig] ||
       <a href="/garden" class="back-link">← Back to Garden</a>
 
       <article class="note-paper-full">
-        <!-- Feed strip -->
-        <div class="note-feed-strip">
-          {[...Array(30)].map(() => (
-            <div class="note-sprocket-hole"></div>
-          ))}
-        </div>
-
-        <!-- Content -->
         <div class="note-body">
-          <!-- Meta bar -->
+
           <div class="note-meta-row">
             {note.date && <span class="note-meta-date">{note.date}</span>}
-            <span class="note-maturity-badge">
-              {maturity.emoji} {maturity.label}
-            </span>
+            <span class="note-maturity-badge">{maturity.emoji} {maturity.label}</span>
           </div>
 
           <h1 class="note-detail-title">{note.title}</h1>
@@ -56,7 +46,7 @@ const maturity = maturityConfig[note.maturity as keyof typeof maturityConfig] ||
           {note.tags && note.tags.length > 0 && (
             <div class="note-tags-section">
               {(note.tags as string[]).map((tag) => (
-                <span class="note-detail-tag">#{tag}</span>
+                <a href={`/garden?tag=${tag}`} class="note-detail-tag">#{tag}</a>
               ))}
             </div>
           )}
@@ -74,10 +64,8 @@ const maturity = maturityConfig[note.maturity as keyof typeof maturityConfig] ||
               </div>
             </div>
           )}
-        </div>
 
-        <!-- Dot matrix overlay -->
-        <div class="dot-matrix-overlay" aria-hidden="true"></div>
+        </div>
       </article>
 
     </div>
@@ -86,50 +74,53 @@ const maturity = maturityConfig[note.maturity as keyof typeof maturityConfig] ||
 
 <style>
   .note-detail-container {
-    max-width: 800px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 24px 32px 96px;
   }
 
+  /* ── Paper card — same visual as homepage .note-card ── */
   .note-paper-full {
     position: relative;
-    display: flex;
     overflow: hidden;
-    background: linear-gradient(180deg, var(--note-paper) 0%, var(--note-feed) 50%, var(--note-paper) 100%);
-    border: 1px solid var(--note-border);
     border-radius: 2px;
-    box-shadow: 2px 4px 16px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15);
-    min-height: 600px;
+
+    background-color: #E0E4EB;
+    background-image: radial-gradient(circle, rgba(78, 87, 106, 0.12) 1px, transparent 1px);
+    background-size: 14px 14px;
+
+    box-shadow: 2px 4px 16px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.25);
   }
 
-  .note-feed-strip {
-    flex-shrink: 0;
-    width: 40px;
-    background: var(--note-feed);
-    border-right: 1px dashed var(--note-border);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    padding: 12px 0;
+  /* Feed strip with sprocket holes */
+  .note-paper-full::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 26px;
+    background-color: #D1D6E0;
+    background-image: radial-gradient(circle, #4E576A 4px, transparent 4.5px);
+    background-size: 26px 28px;
+    background-repeat: repeat-y;
+    background-position: center 8px;
   }
 
-  .note-sprocket-hole {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--note-sprocket);
-    border: 1px solid var(--note-border);
-    opacity: 0.5;
+  /* Red margin line */
+  .note-paper-full::after {
+    content: '';
+    position: absolute;
+    left: 26px; top: 0; bottom: 0;
+    width: 1.5px;
+    background: rgba(208, 58, 58, 0.5);
   }
 
   .note-body {
-    flex: 1;
-    padding: 48px 48px 56px 40px;
     position: relative;
     z-index: 1;
+    padding: 48px 48px 56px 52px;
   }
 
+  /* ── Header meta ── */
   .note-meta-row {
     display: flex;
     align-items: center;
@@ -140,25 +131,24 @@ const maturity = maturityConfig[note.maturity as keyof typeof maturityConfig] ||
   .note-meta-date {
     font-size: 0.72rem;
     font-family: monospace;
-    color: var(--note-dimmer);
-    opacity: 0.8;
+    color: #667085;
   }
 
   .note-maturity-badge {
     font-size: 0.7rem;
     font-family: monospace;
     padding: 3px 10px;
-    background: var(--note-feed);
-    border: 1px solid var(--note-border);
+    background: #D1D6E0;
+    border: 1px solid rgba(78, 87, 106, 0.35);
     border-radius: 3px;
-    color: var(--note-tag);
+    color: #4E576A;
   }
 
   .note-detail-title {
     font-family: monospace;
     font-size: clamp(1.8rem, 4vw, 2.6rem);
     font-weight: 700;
-    color: var(--note-text);
+    color: #0A0E15;
     line-height: 1.15;
     letter-spacing: -0.02em;
     margin-bottom: 20px;
@@ -167,76 +157,180 @@ const maturity = maturityConfig[note.maturity as keyof typeof maturityConfig] ||
   .note-detail-excerpt {
     font-size: 1rem;
     font-family: monospace;
-    color: var(--note-excerpt);
+    color: #373F4E;
     line-height: 1.65;
     margin-bottom: 32px;
     padding-bottom: 32px;
-    border-bottom: 2px dashed var(--note-border);
   }
 
+  /* ── Prose ── */
   .note-prose {
     font-family: monospace;
     font-size: 0.9rem;
-    line-height: 1.75;
-    color: var(--note-excerpt);
+    line-height: 1.8;
+    color: #373F4E;
   }
 
-  .note-prose h1, .note-prose h2, .note-prose h3 {
-    color: var(--note-text);
+  .note-prose :global(p) { margin-bottom: 1.1em; }
+
+  .note-prose :global(h1),
+  .note-prose :global(h2),
+  .note-prose :global(h3),
+  .note-prose :global(h4),
+  .note-prose :global(h5),
+  .note-prose :global(h6) {
     font-family: monospace;
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
+    font-weight: 700;
+    color: #0A0E15;
+    line-height: 1.25;
+    margin-top: 2em;
+    margin-bottom: 0.6em;
   }
 
-  .note-prose p { margin-bottom: 1em; }
+  .note-prose :global(h1) { font-size: 1.5rem; }
+  .note-prose :global(h2) {
+    font-size: 1.2rem;
+    padding-bottom: 0.3em;
+    border-bottom: 1px dashed rgba(78, 87, 106, 0.35);
+  }
+  .note-prose :global(h3) { font-size: 1.05rem; }
+  .note-prose :global(h4) { font-size: 0.95rem; }
+  .note-prose :global(h5) { font-size: 0.9rem; opacity: 0.85; }
+  .note-prose :global(h6) { font-size: 0.85rem; opacity: 0.75; }
 
-  .note-prose a { color: var(--note-tag); }
+  .note-prose :global(a) {
+    color: #4E576A;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 0.15s;
+  }
+  .note-prose :global(a:hover) { opacity: 0.7; }
 
-  .note-prose code {
-    background: var(--note-feed);
-    border: 1px solid var(--note-border);
-    padding: 0.1em 0.3em;
+  .note-prose :global(strong) { color: #0A0E15; font-weight: 700; }
+  .note-prose :global(em) { font-style: italic; }
+
+  .note-prose :global(ul),
+  .note-prose :global(ol) {
+    padding-left: 1.6em;
+    margin-bottom: 1.1em;
+  }
+  .note-prose :global(ul) { list-style-type: disc; }
+  .note-prose :global(ol) { list-style-type: decimal; }
+  .note-prose :global(li) { margin-bottom: 0.35em; padding-left: 0.2em; }
+  .note-prose :global(li > ul),
+  .note-prose :global(li > ol) { margin-top: 0.3em; margin-bottom: 0; }
+
+  .note-prose :global(blockquote) {
+    border-left: 3px solid rgba(208, 58, 58, 0.5);
+    margin: 1.5em 0;
+    padding: 0.6em 0 0.6em 1.2em;
+    background: #D1D6E0;
+    border-radius: 0 2px 2px 0;
+    color: #373F4E;
+    font-style: italic;
+  }
+  .note-prose :global(blockquote p) { margin-bottom: 0; }
+
+  .note-prose :global(code) {
+    background: #D1D6E0;
+    border: 1px solid rgba(78, 87, 106, 0.35);
+    padding: 0.15em 0.4em;
     border-radius: 2px;
-    font-size: 0.85em;
+    font-size: 0.82em;
+    font-family: monospace;
   }
 
-  .note-prose ul, .note-prose ol {
-    padding-left: 1.5em;
-    margin-bottom: 1em;
+  .note-prose :global(.code-block) {
+    background: #0d1117;
+    border: 1px solid rgba(78, 87, 106, 0.35);
+    border-radius: 4px;
+    padding: 1em 1.2em;
+    margin: 1.4em 0;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.65;
+  }
+  .note-prose :global(.code-block code) {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    border-radius: 0;
   }
 
-  .note-prose li { margin-bottom: 0.3em; }
+  .note-prose :global(hr) {
+    border: none;
+    border-top: 2px dashed rgba(78, 87, 106, 0.35);
+    margin: 2em 0;
+  }
 
+  .note-prose :global(img) {
+    max-width: 100%;
+    border-radius: 3px;
+    border: 1px solid rgba(78, 87, 106, 0.35);
+    margin: 1.2em 0;
+    display: block;
+  }
+
+  .note-prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    margin: 1.4em 0;
+  }
+  .note-prose :global(th),
+  .note-prose :global(td) {
+    border: 1px solid rgba(78, 87, 106, 0.35);
+    padding: 0.45em 0.75em;
+    text-align: left;
+  }
+  .note-prose :global(th) {
+    background: #D1D6E0;
+    color: #0A0E15;
+    font-weight: 700;
+  }
+  .note-prose :global(tr:nth-child(even) td) {
+    background: rgba(78, 87, 106, 0.06);
+  }
+
+  /* ── Tags ── */
   .note-tags-section {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 40px;
     padding-top: 28px;
-    border-top: 2px dashed var(--note-border);
   }
 
   .note-detail-tag {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-family: monospace;
+    font-weight: 500;
     padding: 3px 10px;
-    background: var(--note-feed);
-    color: var(--note-tag);
-    border: 1px solid var(--note-border);
-    border-radius: 3px;
+    background: #D1D6E0;
+    color: #4E576A;
+    border: 1px solid rgba(78, 87, 106, 0.35);
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .note-detail-tag:hover {
+    background: #BFC6D4;
+    border-color: #4E576A;
   }
 
+  /* ── Related notes ── */
   .note-related {
     margin-top: 40px;
     padding-top: 32px;
-    border-top: 2px dashed var(--note-border);
+    border-top: 2px dashed rgba(78, 87, 106, 0.35);
   }
 
   .note-related-heading {
     font-family: monospace;
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--note-text);
+    color: #0A0E15;
     margin-bottom: 20px;
   }
 
@@ -247,31 +341,58 @@ const maturity = maturityConfig[note.maturity as keyof typeof maturityConfig] ||
   }
 
   .note-related-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 16px;
-    background: var(--note-feed);
-    border: 1px solid var(--note-border);
+    padding: 16px 16px 16px 32px;
+    background-color: #D1D6E0;
+    background-image: radial-gradient(circle, rgba(78, 87, 106, 0.12) 1px, transparent 1px);
+    background-size: 14px 14px;
     border-radius: 2px;
+    overflow: hidden;
     text-decoration: none;
-    transition: opacity 0.15s;
+    box-shadow: 1px 2px 6px rgba(0,0,0,0.2);
+    transition: transform 0.15s, box-shadow 0.15s;
   }
 
-  .note-related-card:hover { opacity: 0.8; }
+  .note-related-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 18px;
+    background-color: #BFC6D4;
+    background-image: radial-gradient(circle, #4E576A 3px, transparent 3.5px);
+    background-size: 18px 22px;
+    background-repeat: repeat-y;
+    background-position: center 6px;
+  }
+
+  .note-related-card::after {
+    content: '';
+    position: absolute;
+    left: 18px; top: 0; bottom: 0;
+    width: 1px;
+    background: rgba(208, 58, 58, 0.45);
+  }
+
+  .note-related-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 2px 4px 10px rgba(0,0,0,0.25);
+  }
 
   .note-related-title {
     font-family: monospace;
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--note-text);
+    color: #0A0E15;
     line-height: 1.3;
   }
 
   .note-related-excerpt {
     font-family: monospace;
     font-size: 0.75rem;
-    color: var(--note-excerpt);
+    color: #373F4E;
     line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -279,18 +400,21 @@ const maturity = maturityConfig[note.maturity as keyof typeof maturityConfig] ||
     overflow: hidden;
   }
 
-  .dot-matrix-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
-    background-size: 4px 4px;
-    opacity: 0.5;
+  /* ── Light mode ── */
+  html[data-theme="light"] .note-paper-full {
+    background-color: #FFFFFF;
+    background-image: radial-gradient(circle, rgba(78, 87, 106, 0.16) 1px, transparent 1px);
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
   }
 
+  html[data-theme="light"] .note-paper-full::before {
+    background-color: #F0F1F5;
+    background-image: radial-gradient(circle, #BFC6D4 4px, transparent 4.5px);
+  }
+
+  /* ── Responsive ── */
   @media (max-width: 640px) {
     .note-detail-container { padding: 24px 20px 64px; }
-    .note-feed-strip { display: none; }
-    .note-body { padding: 28px 24px 40px; }
+    .note-body { padding: 28px 24px 40px 36px; }
   }
 </style>

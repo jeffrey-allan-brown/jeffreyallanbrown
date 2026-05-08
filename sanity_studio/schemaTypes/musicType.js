@@ -36,6 +36,11 @@ export const musicType = defineType({
 			type: "boolean"
 		}),
 		defineField({
+			name: "content",
+			title: "Review",
+			type: "markdown"
+		}),
+		defineField({
 			name: "currentlyListening",
 			title: "Currently Listening",
 			type: "boolean",

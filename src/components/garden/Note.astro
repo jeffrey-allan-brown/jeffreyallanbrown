@@ -9,171 +9,152 @@ const maturityConfig = {
 const maturityData = maturityConfig[maturity as keyof typeof maturityConfig];
 ---
 
-<article class="note-container">
-  <a href={`/garden/${slug}`} class="note-paper">
-    <div class="note-content">
-      <div class="note-header">
-        <h3 class="note-title">{title}</h3>
-        <div class="note-meta">
-          {maturityData && <span class="note-maturity">{maturityData.emoji}</span>}
-          {date && <span class="note-date">{date}</span>}
-        </div>
-      </div>
+<a href={`/garden/${slug}`} class="note-card">
+  <div class="note-maturity-row">
+    {maturityData && <span class="note-maturity">{maturityData.emoji}</span>}
+    {date && <span class="note-date">{date}</span>}
+  </div>
 
-      {excerpt && <p class="note-excerpt">{excerpt}</p>}
+  <div class="note-title">{title}</div>
 
-      {tags.length > 0 && (
-        <div class="note-tags">
-          {tags.map((tag: string) => (
-            <span class="note-tag">#{tag}</span>
-          ))}
-        </div>
-      )}
+  {excerpt && <div class="note-excerpt">{excerpt}</div>}
 
-      <span class="note-read-more">→ READ MORE</span>
+  {tags.length > 0 && (
+    <div class="note-tags">
+      {tags.map((tag: string) => (
+        <span class="note-tag">#{tag}</span>
+      ))}
     </div>
+  )}
 
-    <div class="dot-matrix-overlay" aria-hidden="true"></div>
-  </a>
-</article>
+  <span class="note-read-more">→ READ MORE</span>
+</a>
 
 <style>
-  .note-container {
-    transition: transform 0.18s ease;
-  }
-
-  .note-container:hover {
-    transform: translateY(-2px);
-  }
-
-  .note-paper {
+  .note-card {
     position: relative;
-    display: block;
-    overflow: hidden;
-    text-decoration: none;
-    color: var(--note-text);
-    background-color: var(--note-paper);
-    background-image: radial-gradient(circle, rgba(78,87,106,0.2) 1px, transparent 1px);
-    background-size: 14px 14px;
-    border: 1px solid var(--note-border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 16px 18px 38px;
+    border: none;
     border-radius: 2px;
-    box-shadow: 2px 3px 10px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.15);
-    min-height: 180px;
+    text-decoration: none;
+    color: #0A0E15;
+    overflow: hidden;
+
+    background-color: #E0E4EB;
+    background-image: radial-gradient(circle, rgba(78, 87, 106, 0.12) 1px, transparent 1px);
+    background-size: 14px 14px;
+
+    box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.25);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
 
-  .note-container:hover .note-paper {
-    box-shadow: 3px 6px 16px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.2);
-  }
-
-  /* Feed strip */
-  .note-paper::before {
+  /* Feed strip with sprocket holes */
+  .note-card::before {
     content: '';
     position: absolute;
     left: 0; top: 0; bottom: 0;
     width: 26px;
-    background-color: var(--note-feed);
-    background-image: radial-gradient(circle, var(--note-sprocket) 4px, transparent 4.5px);
+    background-color: #D1D6E0;
+    background-image: radial-gradient(circle, #4E576A 4px, transparent 4.5px);
     background-size: 26px 28px;
     background-repeat: repeat-y;
     background-position: center 8px;
   }
 
-  /* Margin line */
-  .note-paper::after {
+  /* Red margin line */
+  .note-card::after {
     content: '';
     position: absolute;
     left: 26px; top: 0; bottom: 0;
     width: 1.5px;
-    background: rgba(208,58,58,0.4);
+    background: rgba(208, 58, 58, 0.5);
   }
 
-  .note-content {
-    position: relative;
-    z-index: 1;
-    padding: 18px 18px 20px 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  .note-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 6px 16px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.25);
   }
 
-  .note-header {
+  .note-maturity-row {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 12px;
-  }
-
-  .note-title {
-    font-family: monospace;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--note-text);
-    line-height: 1.35;
-    letter-spacing: -0.01em;
-    flex: 1;
-  }
-
-  .note-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-    flex-shrink: 0;
+    gap: 8px;
   }
 
   .note-maturity {
-    font-size: 1rem;
+    font-size: 0.9rem;
     line-height: 1;
   }
 
   .note-date {
     font-size: 0.62rem;
-    font-family: monospace;
-    color: var(--note-dimmer);
-    opacity: 0.75;
-    white-space: nowrap;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: #667085;
+  }
+
+  .note-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    color: #0A0E15;
   }
 
   .note-excerpt {
-    font-family: monospace;
-    font-size: 0.78rem;
-    color: var(--note-excerpt);
+    font-size: 0.77rem;
+    font-weight: 400;
     line-height: 1.6;
+    color: #373F4E;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    flex: 1;
   }
 
   .note-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 6px;
+    margin-top: 2px;
   }
 
   .note-tag {
-    font-family: monospace;
     font-size: 0.62rem;
     font-weight: 500;
-    color: var(--note-tag);
-    border: 1px solid var(--note-border);
-    padding: 1px 6px;
+    letter-spacing: 0.04em;
+    color: #4E576A;
+    border: 1px solid rgba(78, 87, 106, 0.35);
+    padding: 2px 7px;
     border-radius: 2px;
   }
 
   .note-read-more {
-    font-family: monospace;
     font-size: 0.65rem;
-    color: var(--note-dimmer);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #667085;
     margin-top: 2px;
   }
 
-  .dot-matrix-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px);
-    background-size: 4px 4px;
-    opacity: 0.4;
+  /* Light mode */
+  html[data-theme="light"] .note-card {
+    background-color: #FFFFFF;
+    background-image: radial-gradient(circle, rgba(78, 87, 106, 0.16) 1px, transparent 1px);
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.10), 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  html[data-theme="light"] .note-card::before {
+    background-color: #F0F1F5;
+    background-image: radial-gradient(circle, #BFC6D4 4px, transparent 4.5px);
+  }
+
+  html[data-theme="light"] .note-card:hover {
+    box-shadow: 3px 5px 14px rgba(0, 0, 0, 0.14), 0 2px 4px rgba(0, 0, 0, 0.08);
   }
 </style>

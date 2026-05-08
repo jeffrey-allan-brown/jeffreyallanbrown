@@ -26,7 +26,8 @@ export async function getAlbumBySlug(slug) {
 			color,
 			"slug": slug.current,
 			currentlyListening,
-			yearListened
+			yearListened,
+			content
 		}`, {slug: slug}
 	)
 }
